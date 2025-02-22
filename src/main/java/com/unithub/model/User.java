@@ -1,8 +1,11 @@
 package com.unithub.model;
 
+import com.unithub.dto.loginDTOs.LoginRequestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -19,4 +22,18 @@ public class User {
     private String telephone;
     private String name;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "tb_users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+    public boolean isLoginCorrect(LoginRequestDTO loginRequest, PasswordEncoder passwordEncoder) {
+        if (loginRequest.password() == null) {
+            throw new IllegalArgumentException("rawPassword cannot be null");
+        }
+        return passwordEncoder.matches(loginRequest.password(), this.password);
+    }
 }

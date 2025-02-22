@@ -1,4 +1,4 @@
-package com.unithub.dto;
+package com.unithub.dto.eventsDTOs;
 
 import java.time.LocalDateTime;
 

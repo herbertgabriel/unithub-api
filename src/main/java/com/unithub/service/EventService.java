@@ -1,7 +1,7 @@
 package com.unithub.service;
 
-import com.unithub.dto.CadastrarEventoDTO;
-import com.unithub.dto.EventDetailsDTO;
+import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
+import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.model.Event;
 import com.unithub.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,15 +14,16 @@ public class Role {
     private long id;
     private String name;
 
-    public enum Values{
+    public enum Values {
         ADMIN(1L),
         ORGANIZADOR(2L),
         ALUNO(3L);
 
         long roleId;
-        Values(long roleId){
+        Values(long roleId) {
             this.roleId = roleId;
         }
+
         public long getRoleId() {
             return roleId;
         }

@@ -1,7 +1,7 @@
 package com.unithub.controller;
 
-import com.unithub.dto.CadastrarEventoDTO;
-import com.unithub.dto.EventDetailsDTO;
+import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
+import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.service.EventService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
