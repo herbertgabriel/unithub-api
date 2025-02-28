@@ -1,6 +1,6 @@
 package com.unithub.model;
 
-import com.unithub.dto.loginDTOs.LoginRequestDTO;
+import com.unithub.dto.userDTOs.loginDTOs.LoginRequestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;

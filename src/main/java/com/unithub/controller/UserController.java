@@ -1,7 +1,7 @@
 package com.unithub.controller;
 
-import com.unithub.dto.loginDTOs.LoginRequestDTO;
-import com.unithub.dto.loginDTOs.LoginResponseDTO;
+import com.unithub.dto.userDTOs.loginDTOs.LoginRequestDTO;
+import com.unithub.dto.userDTOs.loginDTOs.LoginResponseDTO;
 import com.unithub.dto.userDTOs.CreateUserDTO;
 import com.unithub.service.AuthService;
 import com.unithub.service.UserService;

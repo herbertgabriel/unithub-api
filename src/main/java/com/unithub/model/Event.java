@@ -19,7 +19,7 @@ public class Event {
     private UUID eventId;
 
     @CreationTimestamp
-    private Instant creationTime;
+    private Instant creationTimeStamp;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

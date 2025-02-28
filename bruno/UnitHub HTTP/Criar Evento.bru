@@ -6,6 +6,21 @@ meta {
 
 post {
   url: http://localhost:8080/event
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "title": "Evento de Teste",
+    "description": "Descrição do evento de teste",
+    "dateTime": "2025-03-01T10:00:00",
+    "location": "Local do evento",
+    "category": "Categoria do evento",
+    "active": true,
+    "hasCheckin": true,
+    "hasCertificate": false,
+    "externalSubscriptionLink": "http://example.com/inscricao",
+    "maxParticipants": 100
+  }
 }

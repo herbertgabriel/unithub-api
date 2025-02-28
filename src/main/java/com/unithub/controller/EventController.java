@@ -2,30 +2,41 @@ package com.unithub.controller;
 
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
+import com.unithub.dto.eventsDTOs.FeedDTOs.FeedDTO;
 import com.unithub.service.EventService;
+import com.unithub.service.FeedService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
-@RestController
+@RestController("/event")
 public class EventController {
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
+    private final FeedService feedService;
 
-    @PostMapping("/event")
+    public EventController(EventService eventService, FeedService feedService) {
+        this.eventService = eventService;
+        this.feedService = feedService;
+    }
+
+    @PostMapping("/create")
     @Transactional
     public ResponseEntity<EventDetailsDTO> cadastrarEvento(@RequestBody @Valid CadastrarEventoDTO dto, UriComponentsBuilder uriBuilder) {
         EventDetailsDTO eventDetails = eventService.cadastrarEvento(dto);
 
         URI uri = uriBuilder.path("/event/{id}").buildAndExpand(eventDetails.eventId()).toUri();
         return ResponseEntity.created(uri).body(eventDetails);
+    }
+
+    @GetMapping("/feed")
+    public ResponseEntity<FeedDTO> feed(@RequestParam(value = "pages", defaultValue = "1") int pages,
+                                        @RequestParam(value = "per_page", defaultValue = "10") int per_page) {
+        FeedDTO feed = feedService.getFeed(pages, per_page);
+        return ResponseEntity.ok(feed);
     }
 }

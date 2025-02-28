@@ -1,7 +1,7 @@
 package com.unithub.service;
 
-import com.unithub.dto.loginDTOs.LoginRequestDTO;
-import com.unithub.dto.loginDTOs.LoginResponseDTO;
+import com.unithub.dto.userDTOs.loginDTOs.LoginRequestDTO;
+import com.unithub.dto.userDTOs.loginDTOs.LoginResponseDTO;
 import com.unithub.model.Role;
 import com.unithub.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;

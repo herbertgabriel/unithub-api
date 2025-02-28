@@ -4,13 +4,22 @@ import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.model.Event;
 import com.unithub.repository.EventRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.unithub.repository.ImageRepository;
+import com.unithub.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EventService {
-    @Autowired
-    private EventRepository eventRepository;
+
+    private final UserRepository userRepository;
+    private final EventRepository eventRepository;
+    private final ImageRepository imageRepository;
+
+    public EventService(UserRepository userRepository, EventRepository eventRepository, ImageRepository imageRepository) {
+        this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
+        this.imageRepository = imageRepository;
+    }
 
     public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados) {
         Event event = new Event();
@@ -41,4 +50,5 @@ public class EventService {
             event.getMaxParticipants()
         );
     }
+
 }
