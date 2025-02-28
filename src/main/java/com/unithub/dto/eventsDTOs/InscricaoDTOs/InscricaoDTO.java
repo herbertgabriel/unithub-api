@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs.EnrollDTOs;
+package com.unithub.dto.eventsDTOs.InscricaoDTOs;
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 

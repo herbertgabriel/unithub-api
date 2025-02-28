@@ -1,17 +1,17 @@
 package com.unithub.dto.eventsDTOs;
 
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+
 import java.time.LocalDateTime;
 
 public record CadastrarEventoDTO(
-    String title,
-    String description,
-    LocalDateTime dateTime,
-    String location,
-    String category,
-    boolean active,
-    boolean hasCheckin,
-    boolean hasCertificate,
-    String externalSubscriptionLink,
-    int maxParticipants
+        JwtAuthenticationToken authentication,
+        String title,
+        String description,
+        LocalDateTime dateTime,
+        String location,
+        String category,
+        String externalSubscriptionLink,
+        int maxParticipants
 ) {
 }

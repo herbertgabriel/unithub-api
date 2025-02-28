@@ -11,8 +11,6 @@ public record EventDetailsDTO(
     String location,
     String category,
     boolean active,
-    boolean hasCheckin,
-    boolean hasCertificate,
     String externalSubscriptionLink,
     int maxParticipants
 ) {

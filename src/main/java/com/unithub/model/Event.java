@@ -31,14 +31,23 @@ public class Event {
     private String location;
     private String category;
     private boolean active;
-    private boolean hasCheckin;
-    private boolean hasCertificate;
     private String externalSubscriptionLink;
+    private int numberOfSubscribers;
     private int maxParticipants;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Enrolled> enrolledList;
+    private List<User> enrolledUserList;
+
+    public void addUser(User user) {
+        if (!enrolledUserList.contains(user)) {
+            enrolledUserList.add(user);
+        }
+    }
+    
+    public void removeUser(User user) {
+        enrolledUserList.remove(user);
+    }
 }

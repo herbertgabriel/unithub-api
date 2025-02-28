@@ -15,13 +15,33 @@ public class FeedService {
         this.eventRepository = eventRepository;
     }
 
-    public FeedDTO getFeed(int page, int pageSize) {
-        var events = eventRepository.findAll(PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimeStamp"))
+    public FeedDTO getFeedActivate(int page, int pageSize) {
+        var events = eventRepository.findAllByActive(true, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimeStamp"))
                 .map(event -> new FeedItemDTO(
-                        event.getEventId()
-                    //  Adicionar atributos a serem exibidos no frontend
+                        event.getEventId(),
+                        event.getTitle(),
+                        event.getDescription(),
+                        event.getDateTime(),
+                        event.getLocation(),
+                        event.getCategory(),
+                        event.isActive()
                 ));
         return new FeedDTO(events.getContent(), page, pageSize, events.getTotalPages(), events.getTotalElements());
     }
 
+    public FeedDTO getFeedDesactivate(int page, int pageSize) {
+        var events = eventRepository.findAllByActive(false, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimeStamp"))
+                .map(event -> new FeedItemDTO(
+                        event.getEventId(),
+                        event.getTitle(),
+                        event.getDescription(),
+                        event.getDateTime(),
+                        event.getLocation(),
+                        event.getCategory(),
+                        event.isActive()
+                ));
+        return new FeedDTO(events.getContent(), page, pageSize, events.getTotalPages(), events.getTotalElements());
+    }
+
+    // Falta ver todos posts do proprio usuario
 }
