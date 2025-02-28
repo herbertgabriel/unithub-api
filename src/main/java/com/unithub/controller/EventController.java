@@ -42,6 +42,8 @@ public class EventController {
         return ResponseEntity.ok(feed);
     }
 
+    // FEED DESACTIVATED
+
     @PostMapping("/subscribe")
     @Transactional
     public ResponseEntity<InscricaoResponseDTO> subscribeEvent(@RequestBody @Valid InscricaoDTO inscricaoDTO) {

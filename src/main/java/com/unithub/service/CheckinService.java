@@ -6,12 +6,12 @@ import com.unithub.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EnrolledService {
+public class CheckinService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EnrolledRepository enrolledRepository;
 
-    public EnrolledService(EventRepository eventRepository, UserRepository userRepository, EnrolledRepository enrolledRepository) {
+    public CheckinService(EventRepository eventRepository, UserRepository userRepository, EnrolledRepository enrolledRepository) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.enrolledRepository = enrolledRepository;

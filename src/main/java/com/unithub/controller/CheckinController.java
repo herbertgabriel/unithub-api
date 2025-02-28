@@ -1,13 +1,13 @@
 package com.unithub.controller;
 
-import com.unithub.service.EnrolledService;
+import com.unithub.service.CheckinService;
 
-public class EnrolledController {
+public class CheckinController {
 
-    private final EnrolledService enrolledService;
+    private final CheckinService checkinService;
 
-    public EnrolledController(EnrolledService enrolledService) {
-        this.enrolledService = enrolledService;
+    public CheckinController(CheckinService checkinService) {
+        this.checkinService = checkinService;
     }
 
 

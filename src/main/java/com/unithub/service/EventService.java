@@ -54,7 +54,6 @@ public class EventService {
         event.setLocation(dados.location());
         event.setDateTime(dados.dateTime());
         event.setExternalSubscriptionLink(dados.externalSubscriptionLink());
-        event.setMaxParticipants(dados.maxParticipants());
 
         eventRepository.save(event);
 
