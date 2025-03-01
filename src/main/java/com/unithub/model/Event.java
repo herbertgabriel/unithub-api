@@ -38,7 +38,12 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "tb_event_users",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> enrolledUserList;
 
     public void addUser(User user) {
@@ -46,7 +51,7 @@ public class Event {
             enrolledUserList.add(user);
         }
     }
-    
+
     public void removeUser(User user) {
         enrolledUserList.remove(user);
     }

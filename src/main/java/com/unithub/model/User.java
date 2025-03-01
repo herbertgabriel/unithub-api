@@ -22,6 +22,9 @@ public class User {
     private String telephone;
     private String name;
 
+    @ManyToMany(mappedBy = "enrolledUserList")
+    private Set<Event> events;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "tb_users_roles",
