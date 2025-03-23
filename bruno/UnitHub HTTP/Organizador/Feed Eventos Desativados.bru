@@ -1,0 +1,15 @@
+meta {
+  name: Feed Eventos Desativados
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/management/event/feed
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Recusar Evento
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/management/event/153e6a1a-3125-4887-95cc-6792db8bd870/recuse
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "motivo": "Faltou tudo!"
+  }
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Atualizar Evento
+  type: http
+  seq: 6
+}
+
+patch {
+  url: http://localhost:8080/event/bb045ead-a337-436a-970c-f24872956d46/update
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Evento me Recusa de Testee",
+    "description": "Descrição do evento de teste2",
+    "dateTime": "2025-06-01T10:00:00",
+    "location": "Local do evento2",
+    "category": "Categoria do event3o",
+    "externalSubscriptionLink": "http://example.com/inscricao4",
+    "maxParticipants": 3
+  }
+}

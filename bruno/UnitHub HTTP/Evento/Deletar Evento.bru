@@ -1,0 +1,15 @@
+meta {
+  name: Deletar Evento
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/event/5cb834c0-acd5-4522-90d4-c02c97f53aef/delete
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

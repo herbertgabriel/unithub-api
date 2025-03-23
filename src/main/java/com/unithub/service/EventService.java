@@ -1,11 +1,12 @@
 package com.unithub.service;
 
 import com.unithub.dto.EmailDTO;
+import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
-import com.unithub.dto.eventsDTOs.Inscricao.InscricaoDTO;
 import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
+import com.unithub.dto.eventsDTOs.RecusarEventoDTO;
 import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
@@ -35,17 +36,18 @@ public class EventService {
 
     // Funcionalidade de cadastro de eventos
     // Falta implementar as imagens do S3
-    public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados) {
-        var usuario = userRepository.findById(UUID.fromString(dados.authentication().getName()))
+    public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados, JwtAuthenticationToken authentication) {
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Event event = new Event();
 
-        if(usuario.getRoles().stream().noneMatch(role -> role.getName().equals("organizador"))){
-            event.setActive(true);
-        } else{
-            event.setActive(false);
-        }
+        event.setCreatorUser(usuario);
+
+        boolean isOrganizador = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()));
+
+        event.setActive(isOrganizador);
 
         if(dados.maxParticipants() <= 0){
             event.setMaxParticipants(0);
@@ -75,14 +77,71 @@ public class EventService {
         );
     }
 
+    public EventDetailsDTO atualizarEvento(UUID eventId, AtualizarEventoDTO dados, JwtAuthenticationToken authentication) {
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+
+        if (event.isActive() && !isOrganizadorOrAdmin) {
+            throw new RuntimeException("You don't have permission to update this active event");
+        }
+
+        if (dados.title() != null) {
+            event.setTitle(dados.title());
+        }
+        if (dados.description() != null) {
+            event.setDescription(dados.description());
+        }
+        if (dados.category() != null) {
+            event.setCategory(dados.category());
+        }
+        if (dados.location() != null) {
+            event.setLocation(dados.location());
+        }
+        if (dados.dateTime() != null) {
+            event.setDateTime(dados.dateTime());
+        }
+        if (dados.externalSubscriptionLink() != null) {
+            event.setExternalSubscriptionLink(dados.externalSubscriptionLink());
+        }
+        if (dados.maxParticipants() != null) {
+            event.setMaxParticipants(dados.maxParticipants());
+        }
+
+        eventRepository.save(event);
+
+        return new EventDetailsDTO(
+                event.getEventId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDateTime(),
+                event.getLocation(),
+                event.getCategory(),
+                event.isActive(),
+                event.getExternalSubscriptionLink(),
+                event.getMaxParticipants()
+        );
+    }
+
     public void deletarEvento(UUID eventId, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
         var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
-        var isOrganizador = usuario.getRoles().stream().anyMatch((role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name())));
 
-        if(isOrganizador || post.getCreatorUser().getUserId().equals(UUID.fromString(authentication.getName()))){
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+
+        if(isOrganizadorOrAdmin || post.getCreatorUser().getUserId().equals(UUID.fromString(authentication.getName()))){
             eventRepository.delete(post);
+        } else {
+            throw new RuntimeException("You don't have permission to delete this event");
         }
     }
 
@@ -94,11 +153,14 @@ public class EventService {
 
         var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
 
-        var isOrganizador = usuario.getRoles().stream().anyMatch((role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name())));
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
-        if(isOrganizador){
+        if(!isOrganizadorOrAdmin){
             throw new RuntimeException("You don't have permission");
         }
+
         var email = post.getCreatorUser().getEmail();
         EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento aprovado!", "Parabéns seu evento foi aprovado com sucesso! ");
         emailService.sendEmail(emailDTO);
@@ -106,20 +168,23 @@ public class EventService {
         post.setActive(true);
         eventRepository.save(post);
     }
-    public void recusarEvento(UUID eventId, JwtAuthenticationToken authentication, String motivo) {
+
+    public void recusarEvento(UUID eventId, RecusarEventoDTO recusar, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
 
-        var isOrganizador = usuario.getRoles().stream().anyMatch((role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name())));
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
-        if(isOrganizador){
+        if(!isOrganizadorOrAdmin){
             throw new RuntimeException("You don't have permission");
         }
 
         var email = post.getCreatorUser().getEmail();
-        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi recusado", motivo);
+        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi recusado", recusar.motivo());
 
         emailService.sendEmail(emailDTO);
 
@@ -127,11 +192,11 @@ public class EventService {
     }
 
     // Funcionalidade de Inscrição em evento e desinscrição
-    public InscricaoResponseDTO subscribeEvent(InscricaoDTO inscricaoDTO) {
-        var usuario = userRepository.findById(UUID.fromString(inscricaoDTO.authentication().getName()))
+    public InscricaoResponseDTO subscribeEvent(UUID eventId, JwtAuthenticationToken authentication) {
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        var evento = eventRepository.findById(inscricaoDTO.eventId())
+        var evento = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         if (evento.getMaxParticipants() == 0){
@@ -152,11 +217,11 @@ public class EventService {
         return new InscricaoResponseDTO(evento.getDateTime());
     }
 
-    public void unsubscribeEvent(InscricaoDTO inscricaoDTO) {
-        var usuario = userRepository.findById(UUID.fromString(inscricaoDTO.authentication().getName()))
+    public void unsubscribeEvent(UUID eventId, JwtAuthenticationToken authentication) {
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        var evento = eventRepository.findById(inscricaoDTO.eventId())
+        var evento = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         if (evento.getMaxParticipants() == 0){
@@ -185,5 +250,6 @@ public class EventService {
 
         return subscribers;
     }
+
 
 }

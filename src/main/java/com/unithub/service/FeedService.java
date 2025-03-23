@@ -24,7 +24,9 @@ public class FeedService {
     }
 
     public FeedDTO getFeedActivate(int page, int pageSize) {
-        var events = eventRepository.findAllByActive(true, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimeStamp"))
+        var eventsPage = eventRepository.findAllByActive(true, PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "creationTimeStamp"));
+
+        var feedItems = eventsPage.getContent().stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),
                         event.getTitle(),
@@ -33,12 +35,16 @@ public class FeedService {
                         event.getLocation(),
                         event.getCategory(),
                         event.isActive()
-                ));
-        return new FeedDTO(events.getContent(), page, pageSize, events.getTotalPages(), events.getTotalElements());
+                ))
+                .collect(Collectors.toList());
+
+        return new FeedDTO(feedItems, page, pageSize, eventsPage.getTotalPages(), eventsPage.getTotalElements());
     }
 
     public FeedDTO getFeedDesactivate(int page, int pageSize) {
-        var events = eventRepository.findAllByActive(false, PageRequest.of(page, pageSize, Sort.Direction.DESC, "creationTimeStamp"))
+        var eventsPage = eventRepository.findAllByActive(false, PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "creationTimeStamp"));
+
+        var feedItems = eventsPage.getContent().stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),
                         event.getTitle(),
@@ -47,8 +53,10 @@ public class FeedService {
                         event.getLocation(),
                         event.getCategory(),
                         event.isActive()
-                ));
-        return new FeedDTO(events.getContent(), page, pageSize, events.getTotalPages(), events.getTotalElements());
+                ))
+                .collect(Collectors.toList());
+
+        return new FeedDTO(feedItems, page, pageSize, eventsPage.getTotalPages(), eventsPage.getTotalElements());
     }
 
     // Funcionalidade para user ver todos seus proprios posts
@@ -58,7 +66,7 @@ public class FeedService {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return eventRepository.findByCreatorUserOrderByCreationTimeStampDesc(user) // Corrigido para usar creationTimeStamp
+        return eventRepository.findByCreatorUserOrderByCreationTimeStampDesc(user)
                 .stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),

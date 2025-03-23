@@ -1,7 +1,8 @@
 package com.unithub.controller;
 
+import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
-import com.unithub.dto.eventsDTOs.Inscricao.InscricaoDTO;
+import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
 import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
@@ -11,6 +12,7 @@ import com.unithub.service.FeedService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -30,13 +32,36 @@ public class EventController {
         this.feedService = feedService;
     }
 
+    // CRUD Evento
+
+    @GetMapping("/self-posts")
+    public ResponseEntity<List<FeedItemDTO>> getSelfPostFeed(JwtAuthenticationToken authentication) {
+        List<FeedItemDTO> feedItems = feedService.getSelfPostFeed(authentication);
+        return ResponseEntity.ok(feedItems);
+    }
+
     @PostMapping("/create")
     @Transactional
-    public ResponseEntity<EventDetailsDTO> cadastrarEvento(@RequestBody @Valid CadastrarEventoDTO dto, UriComponentsBuilder uriBuilder) {
-        EventDetailsDTO eventDetails = eventService.cadastrarEvento(dto);
+    public ResponseEntity<EventDetailsDTO> cadastrarEvento(@RequestBody @Valid CadastrarEventoDTO dto, JwtAuthenticationToken authentication, UriComponentsBuilder uriBuilder) {
+        EventDetailsDTO eventDetails = eventService.cadastrarEvento(dto, authentication);
 
         URI uri = uriBuilder.path("/event/{id}").buildAndExpand(eventDetails.eventId()).toUri();
         return ResponseEntity.created(uri).body(eventDetails);
+    }
+
+    @PatchMapping("/{eventId}/update")
+    public ResponseEntity<EventDetailsDTO> atualizarEvento(@PathVariable UUID eventId,
+                                                           @RequestBody AtualizarEventoDTO dados,
+                                                           JwtAuthenticationToken authentication) {
+        EventDetailsDTO updatedEvent = eventService.atualizarEvento(eventId, dados, authentication);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @DeleteMapping("/{eventId}/delete")
+    @Transactional
+    public ResponseEntity<Void> deleteEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
+        eventService.deletarEvento(eventId, authentication);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/feed")
@@ -46,26 +71,19 @@ public class EventController {
         return ResponseEntity.ok(feed);
     }
 
-    // FEED DESACTIVATED
-    @PostMapping("/subscribe")
+    // Inscrição em eventos
+    @PostMapping("/{eventId}/subscribe")
     @Transactional
-    public ResponseEntity<InscricaoResponseDTO> subscribeEvent(@RequestBody @Valid InscricaoDTO inscricaoDTO) {
-        InscricaoResponseDTO response = eventService.subscribeEvent(inscricaoDTO);
+    public ResponseEntity<InscricaoResponseDTO> subscribeEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
+        InscricaoResponseDTO response = eventService.subscribeEvent(eventId, authentication);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/unsubscribe")
+    @PostMapping("/{eventId}/unsubscribe")
     @Transactional
-    public ResponseEntity<Void> unsubscribeEvent(@RequestBody @Valid InscricaoDTO inscricaoDTO) {
-        eventService.unsubscribeEvent(inscricaoDTO);
+    public ResponseEntity<Void> unsubscribeEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
+        eventService.unsubscribeEvent(eventId, authentication);
         return ResponseEntity.ok().build();
     }
 
-    // Subscribers List
-    @GetMapping("/{eventId}/subscribers")
-    @Transactional
-    public ResponseEntity<List<InscricoesListDTO>> getSubscribers(@PathVariable UUID eventId) {
-        List<InscricoesListDTO> response = eventService.getSubscribers(eventId);
-        return ResponseEntity.ok(response);
-    }
 }
