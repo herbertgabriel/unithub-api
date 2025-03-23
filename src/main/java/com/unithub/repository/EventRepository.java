@@ -14,5 +14,5 @@ import java.util.UUID;
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
     Page<Event> findAllByActive(boolean active, Pageable pageable);
-    List<Event> findByUserOrderByCreationTimeStampDesc(User user);
+    List<Event> findByCreatorUserOrderByCreationTimeStampDesc(User user);
 }

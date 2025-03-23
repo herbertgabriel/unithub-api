@@ -58,7 +58,7 @@ public class FeedService {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return eventRepository.findByUserOrderByCreationTimeStampDesc(user) // Corrigido para usar creationTimeStamp
+        return eventRepository.findByCreatorUserOrderByCreationTimeStampDesc(user) // Corrigido para usar creationTimeStamp
                 .stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),

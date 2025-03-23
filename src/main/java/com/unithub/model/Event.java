@@ -45,8 +45,6 @@ public class Event {
     )
     private List<User> enrolledUserList;
 
-
-
     public void addUser(User user) {
         if (!enrolledUserList.contains(user)) {
             enrolledUserList.add(user);

@@ -18,7 +18,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-@RestController("/event")
+@RestController
+@RequestMapping("/event")
 public class EventController {
 
     private final EventService eventService;
