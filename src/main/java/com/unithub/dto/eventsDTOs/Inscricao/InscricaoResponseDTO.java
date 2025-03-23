@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs.InscricaoDTOs;
+package com.unithub.dto.eventsDTOs.Inscricao;
 
 import java.time.LocalDateTime;
 

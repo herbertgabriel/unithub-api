@@ -1,10 +1,11 @@
 package com.unithub.controller;
 
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
-import com.unithub.dto.eventsDTOs.InscricaoDTOs.InscricaoDTO;
-import com.unithub.dto.eventsDTOs.InscricaoDTOs.InscricaoResponseDTO;
+import com.unithub.dto.eventsDTOs.Inscricao.InscricaoDTO;
+import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
-import com.unithub.dto.eventsDTOs.FeedDTOs.FeedDTO;
+import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
+import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
 import com.unithub.service.EventService;
 import com.unithub.service.FeedService;
 import jakarta.transaction.Transactional;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.UUID;
 
 @RestController("/event")
 public class EventController {
@@ -43,7 +46,6 @@ public class EventController {
     }
 
     // FEED DESACTIVATED
-
     @PostMapping("/subscribe")
     @Transactional
     public ResponseEntity<InscricaoResponseDTO> subscribeEvent(@RequestBody @Valid InscricaoDTO inscricaoDTO) {
@@ -56,5 +58,13 @@ public class EventController {
     public ResponseEntity<Void> unsubscribeEvent(@RequestBody @Valid InscricaoDTO inscricaoDTO) {
         eventService.unsubscribeEvent(inscricaoDTO);
         return ResponseEntity.ok().build();
+    }
+
+    // Subscribers List
+    @GetMapping("/{eventId}/subscribers")
+    @Transactional
+    public ResponseEntity<List<InscricoesListDTO>> getSubscribers(@PathVariable UUID eventId) {
+        List<InscricoesListDTO> response = eventService.getSubscribers(eventId);
+        return ResponseEntity.ok(response);
     }
 }

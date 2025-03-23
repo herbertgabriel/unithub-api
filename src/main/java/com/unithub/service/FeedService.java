@@ -1,7 +1,7 @@
 package com.unithub.service;
 
-import com.unithub.dto.eventsDTOs.FeedDTOs.FeedDTO;
-import com.unithub.dto.eventsDTOs.FeedDTOs.FeedItemDTO;
+import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
+import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
 import com.unithub.repository.EventRepository;
 import com.unithub.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +52,6 @@ public class FeedService {
     }
 
     // Funcionalidade para user ver todos seus proprios posts
-
     public List<FeedItemDTO> getSelfPostFeed(JwtAuthenticationToken authentication) {
         UUID userId = UUID.fromString(authentication.getName());
 

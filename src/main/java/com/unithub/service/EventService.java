@@ -1,9 +1,11 @@
 package com.unithub.service;
 
+import com.unithub.dto.EmailDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
-import com.unithub.dto.eventsDTOs.InscricaoDTOs.InscricaoDTO;
-import com.unithub.dto.eventsDTOs.InscricaoDTOs.InscricaoResponseDTO;
+import com.unithub.dto.eventsDTOs.Inscricao.InscricaoDTO;
+import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
+import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
 import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
@@ -11,9 +13,10 @@ import com.unithub.repository.ImageRepository;
 import com.unithub.repository.UserRepository;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -21,11 +24,13 @@ public class EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final ImageRepository imageRepository;
+    private final EmailService emailService;
 
-    public EventService(UserRepository userRepository, EventRepository eventRepository, ImageRepository imageRepository) {
+    public EventService(UserRepository userRepository, EventRepository eventRepository, ImageRepository imageRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.imageRepository = imageRepository;
+        this.emailService = emailService;
     }
 
     // Funcionalidade de cadastro de eventos
@@ -58,15 +63,15 @@ public class EventService {
         eventRepository.save(event);
 
         return new EventDetailsDTO(
-            event.getEventId(),
-            event.getTitle(),
-            event.getDescription(),
-            event.getDateTime(),
-            event.getLocation(),
-            event.getCategory(),
-            event.isActive(),
-            event.getExternalSubscriptionLink(),
-            event.getMaxParticipants()
+                event.getEventId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDateTime(),
+                event.getLocation(),
+                event.getCategory(),
+                event.isActive(),
+                event.getExternalSubscriptionLink(),
+                event.getMaxParticipants()
         );
     }
 
@@ -76,7 +81,7 @@ public class EventService {
         var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
         var isOrganizador = usuario.getRoles().stream().anyMatch((role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name())));
 
-        if(isOrganizador || post.getUser().getUserId().equals(UUID.fromString(authentication.getName()))){
+        if(isOrganizador || post.getCreatorUser().getUserId().equals(UUID.fromString(authentication.getName()))){
             eventRepository.delete(post);
         }
     }
@@ -94,6 +99,10 @@ public class EventService {
         if(isOrganizador){
             throw new RuntimeException("You don't have permission");
         }
+        var email = post.getCreatorUser().getEmail();
+        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento aprovado!", "Parabéns seu evento foi aprovado com sucesso! ");
+        emailService.sendEmail(emailDTO);
+
         post.setActive(true);
         eventRepository.save(post);
     }
@@ -108,11 +117,16 @@ public class EventService {
         if(isOrganizador){
             throw new RuntimeException("You don't have permission");
         }
+
+        var email = post.getCreatorUser().getEmail();
+        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi recusado", motivo);
+
+        emailService.sendEmail(emailDTO);
+
         eventRepository.delete(post);
     }
 
     // Funcionalidade de Inscrição em evento e desinscrição
-    @Transactional
     public InscricaoResponseDTO subscribeEvent(InscricaoDTO inscricaoDTO) {
         var usuario = userRepository.findById(UUID.fromString(inscricaoDTO.authentication().getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -128,18 +142,16 @@ public class EventService {
             throw new RuntimeException("User is already enrolled in the event");
         }
 
-        if (evento.getNumberOfSubscribers() >= evento.getMaxParticipants()) {
+        if (evento.getEnrolledUserList().size() >= evento.getMaxParticipants()) {
             throw new RuntimeException("Maximum participants exceeded");
         }
 
-        evento.setNumberOfSubscribers(evento.getNumberOfSubscribers() + 1);
         evento.addUser(usuario);
         eventRepository.save(evento);
 
         return new InscricaoResponseDTO(evento.getDateTime());
     }
 
-    @Transactional
     public void unsubscribeEvent(InscricaoDTO inscricaoDTO) {
         var usuario = userRepository.findById(UUID.fromString(inscricaoDTO.authentication().getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -155,8 +167,23 @@ public class EventService {
             throw new RuntimeException("User isn't enrolled in the event");
         }
 
-        evento.setNumberOfSubscribers(evento.getNumberOfSubscribers() - 1);
         evento.removeUser(usuario);
         eventRepository.save(evento);
     }
+
+    public List<InscricoesListDTO> getSubscribers(UUID eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        List<InscricoesListDTO> subscribers = event.getEnrolledUserList().stream()
+                .map(user -> new InscricoesListDTO(user.getUserId(), user.getName(), user.getTelephone(), user.getEmail()))
+                .collect(Collectors.toList());
+
+        if (subscribers.isEmpty()) {
+            throw new RuntimeException("No subscribers found for this event");
+        }
+
+        return subscribers;
+    }
+
 }

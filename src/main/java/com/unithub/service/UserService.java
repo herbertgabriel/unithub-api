@@ -1,5 +1,6 @@
 package com.unithub.service;
 
+import com.unithub.dto.EmailDTO;
 import com.unithub.dto.userDTOs.CreateUserDTO;
 import com.unithub.model.Role;
 import com.unithub.model.User;
@@ -11,7 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -50,4 +53,24 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+//    @Transactional
+//    public void recuperarSenha(String email) {
+//        Optional<User> userOptional = userRepository.findByEmail(email);
+//        if (userOptional.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Email não encontrado");
+//        }
+//
+//        User user = userOptional.get();
+//        String token = UUID.randomUUID().toString();
+//        // Aqui você deve salvar o token no banco de dados associado ao usuário
+//        // user.setResetPasswordToken(token);
+//        // userRepository.save(user);
+//
+//        String mensagem = "Para redefinir sua senha, clique no link abaixo:\n" +
+//                "http://dominio.com/reset-password?token=" + token;
+//
+//        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Recuperar Senha", mensagem);
+//        emailService.sendEmail(emailDTO);
+//    }
 }

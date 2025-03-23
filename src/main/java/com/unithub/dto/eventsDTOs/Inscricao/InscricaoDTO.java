@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs.InscricaoDTOs;
+package com.unithub.dto.eventsDTOs.Inscricao;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;

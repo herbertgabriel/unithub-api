@@ -23,7 +23,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User creatorUser;
 
     private String title;
     private String description;
@@ -32,7 +32,6 @@ public class Event {
     private String category;
     private boolean active;
     private String externalSubscriptionLink;
-    private int numberOfSubscribers;
     private int maxParticipants;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,6 +45,8 @@ public class Event {
     )
     private List<User> enrolledUserList;
 
+
+
     public void addUser(User user) {
         if (!enrolledUserList.contains(user)) {
             enrolledUserList.add(user);
@@ -55,4 +56,6 @@ public class Event {
     public void removeUser(User user) {
         enrolledUserList.remove(user);
     }
+
+
 }

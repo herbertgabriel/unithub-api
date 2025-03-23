@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs.FeedDTOs;
+package com.unithub.dto.eventsDTOs.Feed;
 
 import java.util.List;
 
