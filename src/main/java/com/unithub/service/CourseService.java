@@ -1,5 +1,6 @@
 package com.unithub.service;
 
+import com.unithub.model.Categorys;
 import com.unithub.model.Course;
 import com.unithub.repository.CourseRepository;
 import jakarta.transaction.Transactional;
@@ -19,9 +20,9 @@ public class CourseService {
     // Adicionar Admin
     @Transactional
     public Course criarCurso(String nome, long categoriaId) {
-        Course.Categorys categoria = Course.Categorys.fromId(categoriaId);
+        Categorys categoria = Categorys.fromId(categoriaId);
 
-        if (categoria == Course.Categorys.OFICIAL || categoria == Course.Categorys.NAO_OFICIAL) {
+        if (categoria == Categorys.OFICIAL || categoria == Categorys.NAO_OFICIAL) {
             throw new IllegalArgumentException("Categorias 'Evento Oficial' e 'Evento Não Oficial' não são permitidas para cursos.");
         }
 
@@ -43,13 +44,13 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public List<Course.Categorys> listarCategoriasAlunos() {
-        return List.of(Course.Categorys.values()).stream()
-                .filter(categoria -> categoria != Course.Categorys.OFICIAL && categoria != Course.Categorys.NAO_OFICIAL)
+    public List<Categorys> listarCategoriasAlunos() {
+        return List.of(Categorys.values()).stream()
+                .filter(categoria -> categoria != Categorys.OFICIAL && categoria != Categorys.NAO_OFICIAL)
                 .toList();
     }
 
-    public List<Course.Categorys> listarCategoriasEventos() {
-        return List.of(Course.Categorys.values());
+    public List<Categorys> listarCategoriasEventos() {
+        return List.of(Categorys.values());
     }
 }

@@ -2,7 +2,7 @@ package com.unithub.service;
 
 import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
 import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
-import com.unithub.model.Course;
+import com.unithub.model.Categorys;
 import com.unithub.repository.EventRepository;
 import com.unithub.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
@@ -34,7 +34,7 @@ public class FeedService {
                         event.getDescription(),
                         event.getDateTime(),
                         event.getLocation(),
-                        event.getCategorias().stream().map(Course.Categorys::getDescricao).collect(Collectors.toSet()),
+                        event.getCategorias().stream().map(Categorys::getDescricao).collect(Collectors.toSet()),
                         event.isActive()
                 ))
                 .collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class FeedService {
                         event.getDescription(),
                         event.getDateTime(),
                         event.getLocation(),
-                        event.getCategorias().stream().map(Course.Categorys::getDescricao).collect(Collectors.toSet()),
+                        event.getCategorias().stream().map(Categorys::getDescricao).collect(Collectors.toSet()),
                         event.isActive()))
                 .collect(Collectors.toList());
     }
@@ -92,7 +92,7 @@ public class FeedService {
                         event.getDescription(),
                         event.getDateTime(),
                         event.getLocation(),
-                        event.getCategorias().stream().map(Course.Categorys::getDescricao).collect(Collectors.toSet()), // Converte categorias para strings
+                        event.getCategorias().stream().map(Categorys::getDescricao).collect(Collectors.toSet()), // Converte categorias para strings
                         event.isActive()
                 ))
                 .collect(Collectors.toList());

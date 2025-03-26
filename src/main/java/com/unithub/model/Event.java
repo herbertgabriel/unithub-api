@@ -34,11 +34,11 @@ public class Event {
     private boolean active;
     private int maxParticipants;
 
-    @ElementCollection(targetClass = Course.Categorys.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = Categorys.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "tb_event_categories", joinColumns = @JoinColumn(name = "event_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
-    private Set<Course.Categorys> categorias = new HashSet<>();
+    private Set<Categorys> categorias = new HashSet<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;

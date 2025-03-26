@@ -7,7 +7,7 @@ import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
 import com.unithub.dto.eventsDTOs.RecusarEventoDTO;
-import com.unithub.model.Course;
+import com.unithub.model.Categorys;
 import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
@@ -59,9 +59,9 @@ public class EventService {
             event.setMaxParticipants(dados.maxParticipants());
         }
 
-        Set<Course.Categorys> categorias = new HashSet<>();
+        Set<Categorys> categorias = new HashSet<>();
         for (Long categoriaId : dados.categoriaIds()) {
-            categorias.add(Course.Categorys.fromId(categoriaId));
+            categorias.add(Categorys.fromId(categoriaId));
         }
 
         event.setTitle(dados.title());
@@ -73,7 +73,7 @@ public class EventService {
         eventRepository.save(event);
 
         Set<String> categoriasAsStrings = categorias.stream()
-                .map(Course.Categorys::getDescricao)
+                .map(Categorys::getDescricao)
                 .collect(Collectors.toSet());
 
         return new EventDetailsDTO(
@@ -119,9 +119,9 @@ public class EventService {
             event.setMaxParticipants(dados.maxParticipants());
         }
         if (dados.categoriaIds() != null) {
-            Set<Course.Categorys> novasCategorias = new HashSet<>();
+            Set<Categorys> novasCategorias = new HashSet<>();
             for (Long categoriaId : dados.categoriaIds()) {
-                novasCategorias.add(Course.Categorys.fromId(categoriaId));
+                novasCategorias.add(Categorys.fromId(categoriaId));
             }
             event.getCategorias().clear(); // Remove as categorias antigas
             event.getCategorias().addAll(novasCategorias); // Adiciona as novas categorias
@@ -130,7 +130,7 @@ public class EventService {
         eventRepository.save(event);
 
         Set<String> categoriasAsStrings = event.getCategorias().stream()
-                .map(Course.Categorys::getDescricao)
+                .map(Categorys::getDescricao)
                 .collect(Collectors.toSet());
 
         return new EventDetailsDTO(
