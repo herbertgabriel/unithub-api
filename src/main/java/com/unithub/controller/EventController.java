@@ -6,7 +6,6 @@ import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
 import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
-import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
 import com.unithub.service.EventService;
 import com.unithub.service.FeedService;
 import jakarta.transaction.Transactional;
@@ -67,7 +66,14 @@ public class EventController {
     @GetMapping("/feed")
     public ResponseEntity<FeedDTO> feed(@RequestParam(value = "pages", defaultValue = "1") int pages,
                                         @RequestParam(value = "per_page", defaultValue = "10") int per_page) {
-        FeedDTO feed = feedService.getFeedActivate(pages, per_page);
+        FeedDTO feed = feedService.getFeed(pages, per_page, true);
+        return ResponseEntity.ok(feed);
+    }
+
+    @GetMapping("/feed/course")
+    public ResponseEntity<FeedDTO> feed(@RequestParam(value = "pages", defaultValue = "1") int pages,
+                                        @RequestParam(value = "per_page", defaultValue = "10") int per_page,JwtAuthenticationToken authentication) {
+        FeedDTO feed = feedService.getFeedByUserCourse(pages, per_page,true, authentication);
         return ResponseEntity.ok(feed);
     }
 

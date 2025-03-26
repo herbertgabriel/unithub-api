@@ -35,7 +35,7 @@ public class EventManagementController {
     @GetMapping("/event/feed")
     public ResponseEntity<FeedDTO> feed(@RequestParam(value = "pages", defaultValue = "1") int pages,
                                         @RequestParam(value = "per_page", defaultValue = "10") int per_page) {
-        FeedDTO feed = feedService.getFeedDesactivate(pages, per_page);
+        FeedDTO feed = feedService.getFeed(pages, per_page, false);
         return ResponseEntity.ok(feed);
     }
 

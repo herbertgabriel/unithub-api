@@ -7,6 +7,7 @@ import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
 import com.unithub.dto.eventsDTOs.EventDetailsDTO;
 import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
 import com.unithub.dto.eventsDTOs.RecusarEventoDTO;
+import com.unithub.model.Course;
 import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
@@ -15,7 +16,9 @@ import com.unithub.repository.UserRepository;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,24 +48,33 @@ public class EventService {
         event.setCreatorUser(usuario);
 
         boolean isOrganizador = usuario.getRoles().stream()
-                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()));
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
         event.setActive(isOrganizador);
 
-        if(dados.maxParticipants() <= 0){
+        if (dados.maxParticipants() <= 0) {
             event.setMaxParticipants(0);
-        } else{
+        } else {
             event.setMaxParticipants(dados.maxParticipants());
+        }
+
+        Set<Course.Categorys> categorias = new HashSet<>();
+        for (Long categoriaId : dados.categoriaIds()) {
+            categorias.add(Course.Categorys.fromId(categoriaId));
         }
 
         event.setTitle(dados.title());
         event.setDescription(dados.description());
-        event.setCategory(dados.category());
+        event.setCategorias(categorias);
         event.setLocation(dados.location());
         event.setDateTime(dados.dateTime());
-        event.setExternalSubscriptionLink(dados.externalSubscriptionLink());
 
         eventRepository.save(event);
+
+        Set<String> categoriasAsStrings = categorias.stream()
+                .map(Course.Categorys::getDescricao)
+                .collect(Collectors.toSet());
 
         return new EventDetailsDTO(
                 event.getEventId(),
@@ -70,9 +82,8 @@ public class EventService {
                 event.getDescription(),
                 event.getDateTime(),
                 event.getLocation(),
-                event.getCategory(),
+                categoriasAsStrings,
                 event.isActive(),
-                event.getExternalSubscriptionLink(),
                 event.getMaxParticipants()
         );
     }
@@ -98,23 +109,29 @@ public class EventService {
         if (dados.description() != null) {
             event.setDescription(dados.description());
         }
-        if (dados.category() != null) {
-            event.setCategory(dados.category());
-        }
         if (dados.location() != null) {
             event.setLocation(dados.location());
         }
         if (dados.dateTime() != null) {
             event.setDateTime(dados.dateTime());
         }
-        if (dados.externalSubscriptionLink() != null) {
-            event.setExternalSubscriptionLink(dados.externalSubscriptionLink());
-        }
         if (dados.maxParticipants() != null) {
             event.setMaxParticipants(dados.maxParticipants());
         }
+        if (dados.categoriaIds() != null) {
+            Set<Course.Categorys> novasCategorias = new HashSet<>();
+            for (Long categoriaId : dados.categoriaIds()) {
+                novasCategorias.add(Course.Categorys.fromId(categoriaId));
+            }
+            event.getCategorias().clear(); // Remove as categorias antigas
+            event.getCategorias().addAll(novasCategorias); // Adiciona as novas categorias
+        }
 
         eventRepository.save(event);
+
+        Set<String> categoriasAsStrings = event.getCategorias().stream()
+                .map(Course.Categorys::getDescricao)
+                .collect(Collectors.toSet());
 
         return new EventDetailsDTO(
                 event.getEventId(),
@@ -122,9 +139,8 @@ public class EventService {
                 event.getDescription(),
                 event.getDateTime(),
                 event.getLocation(),
-                event.getCategory(),
+                categoriasAsStrings,
                 event.isActive(),
-                event.getExternalSubscriptionLink(),
                 event.getMaxParticipants()
         );
     }

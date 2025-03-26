@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record CadastrarEventoDTO(
         @NotNull @NotBlank
@@ -14,8 +15,7 @@ public record CadastrarEventoDTO(
         @NotNull @Future
         LocalDateTime dateTime,
         String location,
-        String category,
-        String externalSubscriptionLink,
+        Set<Long> categoriaIds,
         int maxParticipants
 ) {
 }

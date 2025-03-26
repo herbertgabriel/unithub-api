@@ -6,7 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -29,10 +31,14 @@ public class Event {
     private String description;
     private LocalDateTime dateTime;
     private String location;
-    private String category;
     private boolean active;
-    private String externalSubscriptionLink;
     private int maxParticipants;
+
+    @ElementCollection(targetClass = Course.Categorys.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "tb_event_categories", joinColumns = @JoinColumn(name = "event_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private Set<Course.Categorys> categorias = new HashSet<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;

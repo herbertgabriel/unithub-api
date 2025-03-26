@@ -1,6 +1,7 @@
 package com.unithub.dto.eventsDTOs.Feed;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 public record FeedItemDTO(
@@ -9,7 +10,7 @@ public record FeedItemDTO(
     String description,
     LocalDateTime dateTime,
     String location,
-    String category,
+    Set<String> category,
     boolean active
 ) {
 }

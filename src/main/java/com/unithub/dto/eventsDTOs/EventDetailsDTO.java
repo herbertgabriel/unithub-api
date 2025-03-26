@@ -1,6 +1,7 @@
 package com.unithub.dto.eventsDTOs;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 public record EventDetailsDTO(
@@ -9,9 +10,8 @@ public record EventDetailsDTO(
     String description,
     LocalDateTime dateTime,
     String location,
-    String category,
+    Set<String> categories,
     boolean active,
-    String externalSubscriptionLink,
     int maxParticipants
 ) {
 }

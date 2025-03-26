@@ -25,13 +25,17 @@ public class User {
     @ManyToMany(mappedBy = "enrolledUserList")
     private Set<Event> events;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "tb_users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @ManyToOne
+    @JoinColumn(name = "curso_id")
+    private Course course;
 
     public boolean isLoginCorrect(LoginRequestDTO loginRequest, PasswordEncoder passwordEncoder) {
         if (loginRequest.password() == null) {

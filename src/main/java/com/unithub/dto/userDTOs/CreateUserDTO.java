@@ -12,6 +12,8 @@ public record CreateUserDTO (
         @Pattern(regexp = "\\d{10,11}", message = "O telefone deve conter 10 ou 11 dígitos numéricos")
         String telephone,
         @NotNull @NotBlank @Size(min = 3, message = "O nome deve ter no mínimo 3 caracteres")
-        String name
+        String name,
+        @NotNull(message = "O ID do curso é obrigatório")
+        Long courseId
 ){
 }
