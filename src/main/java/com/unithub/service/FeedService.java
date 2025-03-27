@@ -35,7 +35,8 @@ public class FeedService {
                         event.getDateTime(),
                         event.getLocation(),
                         event.getCategorias().stream().map(Categorys::getDescricao).collect(Collectors.toSet()),
-                        event.isActive()
+                        event.isActive(),
+                        event.getImages()
                 ))
                 .collect(Collectors.toList());
 
@@ -58,7 +59,8 @@ public class FeedService {
                         event.getDateTime(),
                         event.getLocation(),
                         event.getCategorias().stream().map(Categorys::getDescricao).collect(Collectors.toSet()),
-                        event.isActive()))
+                        event.isActive(),
+                        event.getImages()))
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +95,8 @@ public class FeedService {
                         event.getDateTime(),
                         event.getLocation(),
                         event.getCategorias().stream().map(Categorys::getDescricao).collect(Collectors.toSet()), // Converte categorias para strings
-                        event.isActive()
+                        event.isActive(),
+                        event.getImages()
                 ))
                 .collect(Collectors.toList());
 

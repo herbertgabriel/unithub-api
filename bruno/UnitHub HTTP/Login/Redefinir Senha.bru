@@ -1,0 +1,22 @@
+meta {
+  name: Redefinir Senha
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "exemplo@example.com",
+    "password": "senha123"
+  }
+}
+
+vars:post-response {
+  accessToken: res.body.accessToken
+}

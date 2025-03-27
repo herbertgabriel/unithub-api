@@ -1,0 +1,15 @@
+meta {
+  name: Inscrever-se em evento
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/event/4327ca10-db06-464e-ac62-8bca44a231e5/subscribe
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

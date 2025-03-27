@@ -1,5 +1,6 @@
 package com.unithub.controller;
 
+import com.unithub.Exceptions.ImageUploadException;
 import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
 import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
@@ -10,13 +11,21 @@ import com.unithub.service.EventService;
 import com.unithub.service.FeedService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -39,10 +48,30 @@ public class EventController {
         return ResponseEntity.ok(feedItems);
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity<EventDetailsDTO> cadastrarEvento(@RequestBody @Valid CadastrarEventoDTO dto, JwtAuthenticationToken authentication, UriComponentsBuilder uriBuilder) {
-        EventDetailsDTO eventDetails = eventService.cadastrarEvento(dto, authentication);
+    public ResponseEntity<EventDetailsDTO> cadastrarEvento(@RequestParam String title,
+                                                           @RequestParam String description,
+                                                           @RequestParam LocalDateTime dateTime,
+                                                           @RequestParam String location,
+                                                           @RequestParam Set<Long> categoriaIds,
+                                                           @RequestParam int maxParticipants,
+                                                           @RequestParam(required = false) MultipartFile imagem1,
+                                                           @RequestParam(required = false) MultipartFile imagem2,
+                                                           @RequestParam(required = false) MultipartFile imagem3,
+                                                           @RequestParam(required = false) MultipartFile imagem4,
+                                                           JwtAuthenticationToken authentication,
+                                                           UriComponentsBuilder uriBuilder) throws ImageUploadException {
+
+        CadastrarEventoDTO dto = new CadastrarEventoDTO(title, description, dateTime, location, categoriaIds, maxParticipants);
+
+        List<MultipartFile> imagens = new ArrayList<>();
+        if (imagem1 != null) imagens.add(imagem1);
+        if (imagem2 != null) imagens.add(imagem2);
+        if (imagem3 != null) imagens.add(imagem3);
+        if (imagem4 != null) imagens.add(imagem4);
+
+        EventDetailsDTO eventDetails = eventService.cadastrarEvento(dto, imagens, authentication);
 
         URI uri = uriBuilder.path("/event/{id}").buildAndExpand(eventDetails.eventId()).toUri();
         return ResponseEntity.created(uri).body(eventDetails);

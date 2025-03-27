@@ -12,6 +12,7 @@ public record EventDetailsDTO(
     String location,
     Set<String> categories,
     boolean active,
-    int maxParticipants
+    int maxParticipants,
+    Set<String> images
 ) {
 }

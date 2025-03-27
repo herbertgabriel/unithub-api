@@ -11,6 +11,7 @@ public record FeedItemDTO(
     LocalDateTime dateTime,
     String location,
     Set<String> category,
-    boolean active
+    boolean active,
+    Set<String> images
 ) {
 }

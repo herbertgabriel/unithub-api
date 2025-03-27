@@ -1,5 +1,6 @@
 package com.unithub.service;
 
+import com.unithub.Exceptions.ImageUploadException;
 import com.unithub.dto.EmailDTO;
 import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
@@ -11,10 +12,10 @@ import com.unithub.model.Categorys;
 import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
-import com.unithub.repository.ImageRepository;
 import com.unithub.repository.UserRepository;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -27,19 +28,19 @@ public class EventService {
 
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
-    private final ImageRepository imageRepository;
     private final EmailService emailService;
+    private final ImageService imageService;
 
-    public EventService(UserRepository userRepository, EventRepository eventRepository, ImageRepository imageRepository, EmailService emailService) {
+
+    public EventService(UserRepository userRepository, EventRepository eventRepository, EmailService emailService, ImageService imageService) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
-        this.imageRepository = imageRepository;
         this.emailService = emailService;
+        this.imageService = imageService;
     }
 
     // Funcionalidade de cadastro de eventos
-    // Falta implementar as imagens do S3
-    public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados, JwtAuthenticationToken authentication) {
+    public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados, List<MultipartFile> imagens, JwtAuthenticationToken authentication) throws ImageUploadException {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -72,6 +73,19 @@ public class EventService {
 
         eventRepository.save(event);
 
+        if (imagens != null && !imagens.isEmpty()) {
+            if (imagens.size() > 4) {
+                throw new IllegalArgumentException("O evento pode ter no máximo 4 imagens.");
+            }
+
+            for (MultipartFile imagem : imagens) {
+                String imageUrl = imageService.uploadImage(imagem, event);
+                event.getImages().add(imageUrl); // Adiciona a URL da imagem ao evento
+            }
+        }
+
+        eventRepository.save(event);  // Salvar novamente para atualizar as URLs das imagens
+
         Set<String> categoriasAsStrings = categorias.stream()
                 .map(Categorys::getDescricao)
                 .collect(Collectors.toSet());
@@ -84,7 +98,8 @@ public class EventService {
                 event.getLocation(),
                 categoriasAsStrings,
                 event.isActive(),
-                event.getMaxParticipants()
+                event.getMaxParticipants(),
+                event.getImages()
         );
     }
 
@@ -141,21 +156,25 @@ public class EventService {
                 event.getLocation(),
                 categoriasAsStrings,
                 event.isActive(),
-                event.getMaxParticipants()
+                event.getMaxParticipants(),
+                event.getImages()
         );
     }
 
     public void deletarEvento(UUID eventId, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
+        var event = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
 
         var isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
-        if(isOrganizadorOrAdmin || post.getCreatorUser().getUserId().equals(UUID.fromString(authentication.getName()))){
-            eventRepository.delete(post);
+        if (isOrganizadorOrAdmin || event.getCreatorUser().getUserId().equals(UUID.fromString(authentication.getName()))) {
+            // Remove as imagens do S3
+            imageService.deleteAllEventImages(event);
+
+            eventRepository.delete(event);
         } else {
             throw new RuntimeException("You don't have permission to delete this event");
         }

@@ -40,8 +40,10 @@ public class Event {
     @Column(name = "category", nullable = false)
     private Set<Categorys> categorias = new HashSet<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "tb_event_images", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "image_url")
+    private Set<String> images = new HashSet<>();
 
     @ManyToMany
     @JoinTable(

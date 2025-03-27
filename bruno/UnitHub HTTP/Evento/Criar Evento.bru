@@ -1,0 +1,39 @@
+meta {
+  name: Criar Evento
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/event/create
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Evento",
+    "description": "Teste",
+    "dateTime": "2025-04-01T10:00:00",
+    "location": "Local",
+    "categoriaIds": [1],
+    "maxParticipants": 2
+  }
+}
+
+body:multipart-form {
+  title: Evento
+  description: Teste2
+  dateTime: 2025-04-01T10:00:00
+  location: Local
+  categoriaIds: 1, 2, 5
+  maxParticipants: 100
+  imagem1: @file(C:\Users\herbe\Pictures\Screenshots\Captura de tela 2025-03-25 160720.png)
+  imagem2: @file(C:\Users\herbe\Pictures\Screenshots\Captura de tela 2025-03-26 175929.png)
+  imagem3: @file(C:\Users\herbe\Pictures\Screenshots\Captura de tela 2025-03-03 121949.png)
+  imagem4: @file(C:\Users\herbe\Pictures\Screenshots\Captura de tela 2025-03-22 191050.png)
+}
