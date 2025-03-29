@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Adiciona a configuração de CORS
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/events").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cursos").permitAll()
                         .requestMatchers(HttpMethod.POST, "/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/recover-password").permitAll()
