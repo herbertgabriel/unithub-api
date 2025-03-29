@@ -1,6 +1,6 @@
 package com.unithub.controller;
 
-import com.unithub.Exceptions.ImageUploadException;
+import com.unithub.exception.ImageUploadException;
 import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
 import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
@@ -10,10 +10,6 @@ import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
 import com.unithub.service.EventService;
 import com.unithub.service.FeedService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;

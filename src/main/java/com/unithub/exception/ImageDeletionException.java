@@ -1,4 +1,4 @@
-package com.unithub.Exceptions;
+package com.unithub.exception;
 
 public class ImageDeletionException extends Exception {
 

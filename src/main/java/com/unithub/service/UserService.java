@@ -5,15 +5,16 @@ import com.unithub.dto.userDTOs.CreateUserDTO;
 import com.unithub.dto.userDTOs.ListarUsersResponseDTO;
 import com.unithub.dto.userDTOs.RedefinirSenhaDTO;
 import com.unithub.model.Course;
+import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.model.User;
 import com.unithub.repository.CourseRepository;
+import com.unithub.repository.EventRepository;
 import com.unithub.repository.RoleRepository;
 import com.unithub.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,17 +30,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final EmailService emailService;
-    private final JwtEncoder jwtEncoder;
     private final CourseRepository courseRepository;
+    private final ImageService imageService;
+    private final EventRepository eventRepository;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService, JwtEncoder jwtEncoder, CourseRepository courseRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, CourseRepository courseRepository, ImageService imageService, EventRepository eventRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.emailService = emailService;
-        this.jwtEncoder = jwtEncoder;
         this.courseRepository = courseRepository;
+        this.imageService = imageService;
+        this.eventRepository = eventRepository;
     }
 
     @Transactional
@@ -146,26 +147,43 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public void deletarUsuario(UUID userId, JwtAuthenticationToken authentication) {
+        // Verifica se o usuário autenticado tem permissão para deletar usuários
         var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-
+    
         if (usuarioAutenticado.getRoles().stream().noneMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
-
+    
+        // Busca o usuário a ser deletado
         var usuario = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
+    
+        // Impede a exclusão de usuários com a role ADMIN
         if (usuario.getRoles().stream().anyMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete admin user");
         }
-
+    
+        // Busca todos os eventos criados pelo usuário
+        var eventosCriados = eventRepository.findByCreatorUser(usuario);
+    
+        // Deleta todas as imagens associadas aos eventos criados pelo usuário
+        for (Event evento : eventosCriados) {
+            imageService.deleteAllEventImages(evento); // Remove as imagens do S3
+        }
+    
+        // Deleta os eventos criados pelo usuário
+        eventRepository.deleteAll(eventosCriados);
+    
+        // Limpa as roles do usuário antes de deletar
         usuario.getRoles().clear();
         userRepository.save(usuario);
-
+    
+        // Deleta o usuário
         userRepository.delete(usuario);
     }
 

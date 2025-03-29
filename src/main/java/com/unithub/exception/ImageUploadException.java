@@ -1,4 +1,4 @@
-package com.unithub.Exceptions;
+package com.unithub.exception;
 
 public class ImageUploadException extends Exception {
     public ImageUploadException(String message) {

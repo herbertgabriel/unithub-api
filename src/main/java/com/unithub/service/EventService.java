@@ -1,6 +1,6 @@
 package com.unithub.service;
 
-import com.unithub.Exceptions.ImageUploadException;
+import com.unithub.exception.ImageUploadException;
 import com.unithub.dto.EmailDTO;
 import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
 import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;

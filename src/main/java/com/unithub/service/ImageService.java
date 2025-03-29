@@ -1,7 +1,7 @@
 package com.unithub.service;
 
-import com.unithub.Exceptions.ImageDeletionException;
-import com.unithub.Exceptions.ImageUploadException;
+import com.unithub.exception.ImageDeletionException;
+import com.unithub.exception.ImageUploadException;
 import com.unithub.model.Event;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
