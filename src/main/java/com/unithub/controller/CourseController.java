@@ -5,6 +5,7 @@ import com.unithub.model.Categorys;
 import com.unithub.model.Course;
 import com.unithub.service.CourseService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,14 +21,14 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> criarCurso(@RequestBody CriarCursoDTO dto) {
-        Course novoCurso = courseService.criarCurso(dto.nome(), dto.categoriaId());
+    public ResponseEntity<Course> criarCurso(@RequestBody CriarCursoDTO dto, JwtAuthenticationToken authentication) {
+        Course novoCurso = courseService.criarCurso(dto.nome(), dto.categoriaId(), authentication);
         return ResponseEntity.ok(novoCurso);
     }
 
     @DeleteMapping("/{cursoId}")
-    public ResponseEntity<Void> deletarCurso(@PathVariable Long cursoId) {
-        courseService.deletarCurso(cursoId);
+    public ResponseEntity<Void> deletarCurso(@PathVariable Long cursoId, JwtAuthenticationToken authentication) {
+        courseService.deletarCurso(cursoId, authentication);
         return ResponseEntity.noContent().build();
     }
 

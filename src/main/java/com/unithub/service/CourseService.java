@@ -2,24 +2,42 @@ package com.unithub.service;
 
 import com.unithub.model.Categorys;
 import com.unithub.model.Course;
+import com.unithub.model.Role;
 import com.unithub.repository.CourseRepository;
+import com.unithub.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
-    public CourseService(CourseRepository courseRepository) {
+    public CourseService(CourseRepository courseRepository, UserRepository userRepository) {
         this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
     }
 
     // Adicionar Admin
     @Transactional
-    public Course criarCurso(String nome, long categoriaId) {
+    public Course criarCurso(String nome, long categoriaId, JwtAuthenticationToken authentication) {
+
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+
+        if(!isOrganizadorOrAdmin){
+            throw new RuntimeException("You don't have permission");
+        }
+
         Categorys categoria = Categorys.fromId(categoriaId);
 
         if (categoria == Categorys.OFICIAL || categoria == Categorys.NAO_OFICIAL) {
@@ -34,7 +52,19 @@ public class CourseService {
     }
 
     @Transactional
-    public void deletarCurso(Long cursoId) {
+    public void deletarCurso(Long cursoId, JwtAuthenticationToken authentication) {
+
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+
+        if(!isOrganizadorOrAdmin){
+            throw new RuntimeException("You don't have permission");
+        }
+
         var curso = courseRepository.findById(cursoId)
                 .orElseThrow(() -> new RuntimeException("Curso not found"));
         courseRepository.delete(curso);
