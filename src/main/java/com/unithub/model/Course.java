@@ -17,5 +17,5 @@ public class Course {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Categorys categoria; // Agora usa a enumeração separada
+    private Category categoria; // Agora usa a enumeração separada
 }

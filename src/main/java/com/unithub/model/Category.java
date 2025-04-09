@@ -1,18 +1,16 @@
 package com.unithub.model;
 
-public enum Categorys {
+public enum Category {
     TECNOLOGIA(1L, "Tecnologia"),
     SAUDE(2L, "Saúde"),
     ENGENHARIA(3L, "Engenharia"),
     HUMANAS(4L, "Humanas"),
-    EXATAS(5L, "Exatas"),
-    NAO_OFICIAL(6L, "Evento Não Oficial"),
-    OFICIAL(7L, "Evento Oficial");
+    EXATAS(5L, "Exatas");
 
     private final long id;
     private final String descricao;
 
-    Categorys(long id, String descricao) {
+    Category(long id, String descricao) {
         this.id = id;
         this.descricao = descricao;
     }
@@ -25,8 +23,8 @@ public enum Categorys {
         return descricao;
     }
 
-    public static Categorys fromId(long id) {
-        for (Categorys categoria : values()) {
+    public static Category fromId(long id) {
+        for (Category categoria : values()) {
             if (categoria.getId() == id) {
                 return categoria;
             }

@@ -1,7 +1,7 @@
 package com.unithub.controller;
 
 import com.unithub.dto.CriarCursoDTO;
-import com.unithub.model.Categorys;
+import com.unithub.model.Category;
 import com.unithub.model.Course;
 import com.unithub.service.CourseService;
 import org.springframework.http.ResponseEntity;
@@ -39,14 +39,14 @@ public class CourseController {
     }
 
     @GetMapping("/categorias/alunos")
-    public ResponseEntity<List<Categorys>> listarCategoriasAlunos() {
-        List<Categorys> categorias = courseService.listarCategoriasAlunos();
+    public ResponseEntity<List<Category>> listarCategoriasAlunos() {
+        List<Category> categorias = courseService.listarCategoriasAlunos();
         return ResponseEntity.ok(categorias);
     }
 
     @GetMapping("/categorias/eventos")
-    public ResponseEntity<List<Categorys>> listarCategoriasEventos() {
-        List<Categorys> categorias = courseService.listarCategoriasEventos();
+    public ResponseEntity<List<Category>> listarCategoriasEventos() {
+        List<Category> categorias = courseService.listarCategoriasEventos();
         return ResponseEntity.ok(categorias);
     }
 }

@@ -8,5 +8,6 @@ CREATE TABLE tb_events (
                            location VARCHAR(255),
                            active BOOLEAN DEFAULT FALSE,
                            max_participants INT DEFAULT 0,
+                           is_official BOOLEAN DEFAULT FALSE,
                            FOREIGN KEY (user_id) REFERENCES tb_user(user_id) ON DELETE CASCADE
 );

@@ -33,12 +33,13 @@ public class Event {
     private String location;
     private boolean active;
     private int maxParticipants;
+    private boolean isOfficial;
 
-    @ElementCollection(targetClass = Categorys.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = Category.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "tb_event_categories", joinColumns = @JoinColumn(name = "event_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
-    private Set<Categorys> categorias = new HashSet<>();
+    private Set<Category> categorias = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "tb_event_images", joinColumns = @JoinColumn(name = "event_id"))

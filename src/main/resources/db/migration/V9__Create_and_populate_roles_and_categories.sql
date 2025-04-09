@@ -11,6 +11,8 @@ INSERT INTO tb_roles (role_id, name) VALUES (2, 'organizador')
     ON DUPLICATE KEY UPDATE name = VALUES(name);
 INSERT INTO tb_roles (role_id, name) VALUES (3, 'aluno')
     ON DUPLICATE KEY UPDATE name = VALUES(name);
+INSERT INTO tb_roles (role_id, name) VALUES (4, 'aluno_representante')
+    ON DUPLICATE KEY UPDATE name = VALUES(name);
 
 -- Criação da tabela de categorias
 CREATE TABLE IF NOT EXISTS tb_categories (
@@ -28,8 +30,4 @@ INSERT INTO tb_categories (id, descricao) VALUES (3, 'Engenharia')
 INSERT INTO tb_categories (id, descricao) VALUES (4, 'Humanas')
     ON DUPLICATE KEY UPDATE descricao = VALUES(descricao);
 INSERT INTO tb_categories (id, descricao) VALUES (5, 'Exatas')
-    ON DUPLICATE KEY UPDATE descricao = VALUES(descricao);
-INSERT INTO tb_categories (id, descricao) VALUES (6, 'Evento Não Oficial')
-    ON DUPLICATE KEY UPDATE descricao = VALUES(descricao);
-INSERT INTO tb_categories (id, descricao) VALUES (7, 'Evento Oficial')
     ON DUPLICATE KEY UPDATE descricao = VALUES(descricao);

@@ -1,6 +1,6 @@
 package com.unithub.service;
 
-import com.unithub.model.Categorys;
+import com.unithub.model.Category;
 import com.unithub.model.Course;
 import com.unithub.model.Role;
 import com.unithub.repository.CourseRepository;
@@ -38,11 +38,7 @@ public class CourseService {
             throw new RuntimeException("You don't have permission");
         }
 
-        Categorys categoria = Categorys.fromId(categoriaId);
-
-        if (categoria == Categorys.OFICIAL || categoria == Categorys.NAO_OFICIAL) {
-            throw new IllegalArgumentException("Categorias 'Evento Oficial' e 'Evento Não Oficial' não são permitidas para cursos.");
-        }
+        Category categoria = Category.fromId(categoriaId);
 
         Course curso = new Course();
         curso.setNome(nome);
@@ -74,13 +70,12 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public List<Categorys> listarCategoriasAlunos() {
-        return List.of(Categorys.values()).stream()
-                .filter(categoria -> categoria != Categorys.OFICIAL && categoria != Categorys.NAO_OFICIAL)
+    public List<Category> listarCategoriasAlunos() {
+        return List.of(Category.values()).stream()
                 .toList();
     }
 
-    public List<Categorys> listarCategoriasEventos() {
-        return List.of(Categorys.values());
+    public List<Category> listarCategoriasEventos() {
+        return List.of(Category.values());
     }
 }
