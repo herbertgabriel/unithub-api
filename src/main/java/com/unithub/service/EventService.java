@@ -55,6 +55,7 @@ public class EventService {
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
         event.setActive(isOrganizador);
+        event.setOfficial(isOrganizador);
 
         if (dados.maxParticipants() <= 0) {
             event.setMaxParticipants(0);
