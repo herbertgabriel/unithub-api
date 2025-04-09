@@ -70,12 +70,8 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public List<Category> listarCategoriasAlunos() {
-        return List.of(Category.values()).stream()
-                .toList();
-    }
-
-    public List<Category> listarCategoriasEventos() {
+    public List<Category> listarCategorias() {
         return List.of(Category.values());
+
     }
 }

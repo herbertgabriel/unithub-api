@@ -45,7 +45,6 @@ public class EventController {
     }
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Transactional
     public ResponseEntity<EventDetailsDTO> cadastrarEvento(@RequestParam String title,
                                                            @RequestParam String description,
                                                            @RequestParam LocalDateTime dateTime,
@@ -73,7 +72,7 @@ public class EventController {
         return ResponseEntity.created(uri).body(eventDetails);
     }
 
-    @PatchMapping("/{eventId}/update")
+    @PatchMapping("/{eventId}")
     public ResponseEntity<EventDetailsDTO> atualizarEvento(@PathVariable UUID eventId,
                                                            @RequestBody AtualizarEventoDTO dados,
                                                            JwtAuthenticationToken authentication) {
@@ -81,8 +80,7 @@ public class EventController {
         return ResponseEntity.ok(updatedEvent);
     }
 
-    @DeleteMapping("/{eventId}/delete")
-    @Transactional
+    @DeleteMapping("/{eventId}")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
         eventService.deletarEvento(eventId, authentication);
         return ResponseEntity.ok().build();
@@ -95,7 +93,7 @@ public class EventController {
         return ResponseEntity.ok(feed);
     }
 
-    @GetMapping("/feed/course")
+    @GetMapping("/feed-by-course")
     public ResponseEntity<FeedDTO> feed(@RequestParam(value = "pages", defaultValue = "1") int pages,
                                         @RequestParam(value = "per_page", defaultValue = "10") int per_page,JwtAuthenticationToken authentication) {
         FeedDTO feed = feedService.getFeedByUserCourse(pages, per_page,true, authentication);
@@ -104,14 +102,12 @@ public class EventController {
 
     // Inscrição em eventos
     @PostMapping("/{eventId}/subscribe")
-    @Transactional
     public ResponseEntity<InscricaoResponseDTO> subscribeEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
         InscricaoResponseDTO response = eventService.subscribeEvent(eventId, authentication);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{eventId}/unsubscribe")
-    @Transactional
     public ResponseEntity<Void> unsubscribeEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
         eventService.unsubscribeEvent(eventId, authentication);
         return ResponseEntity.ok().build();

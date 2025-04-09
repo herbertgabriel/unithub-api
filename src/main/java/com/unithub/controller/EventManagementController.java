@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/management")
+@RequestMapping("/management-event")
 public class EventManagementController {
     private final EventService eventService;
     private final FeedService feedService;
@@ -25,28 +25,33 @@ public class EventManagementController {
     }
 
     // Subscribers List
-    @GetMapping("/event/{eventId}/subscribers")
-    @Transactional
+    @GetMapping("/{eventId}/subscribers")
     public ResponseEntity<List<InscricoesListDTO>> getSubscribers(@PathVariable UUID eventId) {
         List<InscricoesListDTO> response = eventService.getSubscribers(eventId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/event/feed")
+    @GetMapping("/feed")
     public ResponseEntity<FeedDTO> feed(@RequestParam(value = "pages", defaultValue = "1") int pages,
                                         @RequestParam(value = "per_page", defaultValue = "10") int per_page) {
         FeedDTO feed = feedService.getFeed(pages, per_page, false);
         return ResponseEntity.ok(feed);
     }
 
-    @PatchMapping("/event/{eventId}/accept")
+    @GetMapping("/feed/representante")
+    public ResponseEntity<FeedDTO> feedAlunoRepresentante(@RequestParam(value = "pages", defaultValue = "1") int pages,
+                                                          @RequestParam(value = "per_page", defaultValue = "10") int per_page, JwtAuthenticationToken authentication) {
+        FeedDTO feed = feedService.getFeedByUserCourse(pages, per_page,false, authentication);
+        return ResponseEntity.ok(feed);
+    }
+
+    @PatchMapping("/{eventId}/accept")
     public ResponseEntity<FeedDTO> acceptEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {
         eventService.aceitarEvento(eventId, authentication);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/event/{eventId}/recuse")
-    @Transactional
+    @PostMapping("/{eventId}/recuse")
     public ResponseEntity<Void> recuseEvent(@PathVariable UUID eventId, @RequestBody RecusarEventoDTO dto, JwtAuthenticationToken authentication) {
         eventService.recusarEvento(eventId, dto, authentication);
         return ResponseEntity.ok().build();

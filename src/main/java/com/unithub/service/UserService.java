@@ -85,36 +85,38 @@ public class UserService {
     }
 
     // ADMIN
-
     @Transactional
     public void alterarRoleUsuario(AlterarRoleDTO dto, JwtAuthenticationToken authentication) {
         var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-
-        if (usuarioAutenticado.getRoles().stream().noneMatch(role ->
-                role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
+    
+        boolean isAdmin = usuarioAutenticado.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+    
+        boolean isOrganizador = usuarioAutenticado.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()));
+    
+        if (!isAdmin && (!isOrganizador || (dto.roleId() != 3L && dto.roleId() != 4L))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
-
+    
         var usuario = userRepository.findById(dto.userId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+    
         if (usuario.getRoles().stream().anyMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot change admin user");
         }
-
+    
         var novaRole = roleRepository.findById(dto.roleId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
-
-        if(dto.roleId() == 1){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot add a admin user");
+    
+        if (!isAdmin && dto.roleId() == Role.Values.ADMIN.getRoleId()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot assign admin role");
         }
-
+    
         usuario.getRoles().clear();
-
         usuario.getRoles().add(novaRole);
-
         userRepository.save(usuario);
     }
 
@@ -122,19 +124,23 @@ public class UserService {
     public List<ListarUsersResponseDTO> listarUsuariosPorRole(long roleId, JwtAuthenticationToken authentication) {
         var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-
-        if (usuarioAutenticado.getRoles().stream().noneMatch(role ->
-                role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
+    
+        boolean isAdmin = usuarioAutenticado.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+        boolean isOrganizador = usuarioAutenticado.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()));
+    
+        if (!isAdmin && (!isOrganizador || (roleId != 3L && roleId != 4L))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
-
+    
         var role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
-
+    
         var usuarios = userRepository.findAll().stream()
                 .filter(user -> user.getRoles().contains(role))
                 .toList();
-
+    
         return usuarios.stream()
                 .map(user -> new ListarUsersResponseDTO(
                         user.getUserId(),
@@ -149,7 +155,6 @@ public class UserService {
 
     @Transactional
     public void deletarUsuario(UUID userId, JwtAuthenticationToken authentication) {
-        // Verifica se o usuário autenticado tem permissão para deletar usuários
         var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
     
@@ -158,32 +163,25 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
     
-        // Busca o usuário a ser deletado
         var usuario = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     
-        // Impede a exclusão de usuários com a role ADMIN
         if (usuario.getRoles().stream().anyMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete admin user");
         }
     
-        // Busca todos os eventos criados pelo usuário
         var eventosCriados = eventRepository.findByCreatorUser(usuario);
     
-        // Deleta todas as imagens associadas aos eventos criados pelo usuário
         for (Event evento : eventosCriados) {
-            imageService.deleteAllEventImages(evento); // Remove as imagens do S3
+            imageService.deleteAllEventImages(evento);
         }
     
-        // Deleta os eventos criados pelo usuário
         eventRepository.deleteAll(eventosCriados);
     
-        // Limpa as roles do usuário antes de deletar
         usuario.getRoles().clear();
         userRepository.save(usuario);
-    
-        // Deleta o usuário
+
         userRepository.delete(usuario);
     }
 

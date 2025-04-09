@@ -13,6 +13,7 @@ import com.unithub.model.Event;
 import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
 import com.unithub.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,7 @@ public class EventService {
     }
 
     // Funcionalidade de cadastro de eventos
+    @Transactional
     public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados, List<MultipartFile> imagens, JwtAuthenticationToken authentication) throws ImageUploadException {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -103,6 +105,7 @@ public class EventService {
         );
     }
 
+    @Transactional
     public EventDetailsDTO atualizarEvento(UUID eventId, AtualizarEventoDTO dados, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -161,6 +164,7 @@ public class EventService {
         );
     }
 
+    @Transactional
     public void deletarEvento(UUID eventId, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -182,51 +186,75 @@ public class EventService {
 
     // Funcionalidade de Aceitar e Recusar eventos criados por alunos
     // Necessario Integrar API com e-mail informando motivo do recuso
+    @Transactional
     public void aceitarEvento(UUID eventId, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
-
-        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+    
+        var evento = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+    
+        boolean isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
-
-        if(!isOrganizadorOrAdmin){
-            throw new RuntimeException("You don't have permission");
+    
+        boolean isAlunoRepresentante = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ALUNO_REPRESENTANTE.name()));
+    
+        if (isAlunoRepresentante) {
+            if (usuario.getCourse() == null || evento.getCreatorUser().getCourse() == null ||
+                    !usuario.getCourse().equals(evento.getCreatorUser().getCourse())) {
+                throw new RuntimeException("You don't have permission to accept events outside your course");
+            }
         }
-
-        var email = post.getCreatorUser().getEmail();
-        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento aprovado!", "Parabéns seu evento foi aprovado com sucesso! ");
+    
+        if (!isOrganizadorOrAdmin && !isAlunoRepresentante) {
+            throw new RuntimeException("You don't have permission to accept this event");
+        }
+    
+        var email = evento.getCreatorUser().getEmail();
+        EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi aprovado!", "Parabéns, seu evento foi aprovado com sucesso!");
         emailService.sendEmail(emailDTO);
-
-        post.setActive(true);
-        eventRepository.save(post);
+    
+        evento.setActive(true);
+        eventRepository.save(evento);
     }
 
+    @Transactional
     public void recusarEvento(UUID eventId, RecusarEventoDTO recusar, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        var post = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
-
-        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+    
+        var evento = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+    
+        boolean isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
-
-        if(!isOrganizadorOrAdmin){
-            throw new RuntimeException("You don't have permission");
+    
+        boolean isAlunoRepresentante = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ALUNO_REPRESENTANTE.name()));
+    
+        if (isAlunoRepresentante) {
+            if (usuario.getCourse() == null || evento.getCreatorUser().getCourse() == null ||
+                    !usuario.getCourse().equals(evento.getCreatorUser().getCourse())) {
+                throw new RuntimeException("You don't have permission to reject events outside your course");
+            }
         }
-
-        var email = post.getCreatorUser().getEmail();
+    
+        if (!isOrganizadorOrAdmin && !isAlunoRepresentante) {
+            throw new RuntimeException("You don't have permission to reject this event");
+        }
+    
+        var email = evento.getCreatorUser().getEmail();
         EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi recusado", recusar.motivo());
-
         emailService.sendEmail(emailDTO);
-
-        eventRepository.delete(post);
+    
+        eventRepository.delete(evento);
     }
 
     // Funcionalidade de Inscrição em evento e desinscrição
+    @Transactional
     public InscricaoResponseDTO subscribeEvent(UUID eventId, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -252,6 +280,7 @@ public class EventService {
         return new InscricaoResponseDTO(evento.getDateTime());
     }
 
+    @Transactional
     public void unsubscribeEvent(UUID eventId, JwtAuthenticationToken authentication) {
         var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
                 .orElseThrow(() -> new RuntimeException("User not found"));

@@ -36,14 +36,12 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Transactional
     @PostMapping("/recover-password")
     public ResponseEntity<Void> recuperarSenha(@RequestBody LoginRecoverDTO dto) {
         authService.recuperarSenha(dto);
         return ResponseEntity.ok().build();
     }
 
-    @Transactional
     @PostMapping("/reset-password")
     public ResponseEntity<Void> redefinirSenha(@RequestBody RedefinirSenhaDTO dto, JwtAuthenticationToken authentication) {
         userService.redefinirSenha(dto, authentication);

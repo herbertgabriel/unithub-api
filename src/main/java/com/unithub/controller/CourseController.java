@@ -38,15 +38,10 @@ public class CourseController {
         return ResponseEntity.ok(cursos);
     }
 
-    @GetMapping("/categorias/alunos")
-    public ResponseEntity<List<Category>> listarCategoriasAlunos() {
-        List<Category> categorias = courseService.listarCategoriasAlunos();
+    @GetMapping("/categorias")
+    public ResponseEntity<List<Category>> listarCategorias() {
+        List<Category> categorias = courseService.listarCategorias();
         return ResponseEntity.ok(categorias);
     }
 
-    @GetMapping("/categorias/eventos")
-    public ResponseEntity<List<Category>> listarCategoriasEventos() {
-        List<Category> categorias = courseService.listarCategoriasEventos();
-        return ResponseEntity.ok(categorias);
-    }
 }

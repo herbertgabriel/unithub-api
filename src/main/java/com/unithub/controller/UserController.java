@@ -37,4 +37,8 @@ public class UserController {
         userService.deletarUsuario(userId, authentication);
         return ResponseEntity.noContent().build();
     }
+
+    // CRUD Gerenciamento de Representantes
+
+
 }
