@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs.Feed;
+package com.unithub.dto.respose.feed;
 
 import java.time.LocalDateTime;
 import java.util.Set;

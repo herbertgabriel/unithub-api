@@ -1,4 +1,4 @@
-package com.unithub.dto.userDTOs.loginDTOs;
+package com.unithub.dto.request;
 
 public record LoginRecoverDTO(String email) {
 }

@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs.Inscricao;
+package com.unithub.dto.respose.subscribe;
 
 import java.time.LocalDateTime;
 

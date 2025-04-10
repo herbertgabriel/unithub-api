@@ -1,4 +1,4 @@
-package com.unithub.dto.userDTOs;
+package com.unithub.dto.request;
 
 import jakarta.validation.constraints.*;
 
