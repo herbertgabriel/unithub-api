@@ -61,7 +61,7 @@ public class CourseService {
         }
 
         var curso = courseRepository.findById(cursoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Curso not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Course not found"));
         courseRepository.delete(curso);
     }
 

@@ -49,21 +49,21 @@ public class UserService {
     @Transactional
     public void createUser(CreateUserDTO dto) {
         if (!dto.password().equals(dto.confirmPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "As senhas não coincidem");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match");
         }
 
         var basicRole = roleRepository.findByName(Role.Values.ALUNO.name());
         if (basicRole == null) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Role ALUNO não encontrado");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Role 'ALUNO' not registered");
         }
 
         var userFromDb = userRepository.findByEmail(dto.email());
         if (userFromDb.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Email já cadastrado");
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Email already registered");
         }
 
         var curso = courseRepository.findById(dto.courseId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Curso não encontrado com o ID: " + dto.courseId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found with ID: " + dto.courseId()));
 
 
         var user = new User();

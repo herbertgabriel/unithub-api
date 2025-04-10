@@ -84,7 +84,7 @@ public class EventService {
 
         if (imagens != null && !imagens.isEmpty()) {
             if (imagens.size() > 4) {
-                throw new ImageUploadException("O evento pode ter no máximo 4 imagens.");
+                throw new ImageUploadException("The event can have a maximum of 4 images");
             }
 
             for (MultipartFile imagem : imagens) {
