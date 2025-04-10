@@ -39,8 +39,6 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | 3L  | `ALUNO`             | Cria eventos não oficiais (precisa de aprovação), inscreve-se em eventos, acessa o feed |
 | 4L  | `ALUNO_REPRESENTANTE` | Aprova ou reprova eventos do seu curso |
 
----
-
 > ✅ **Observação**:  
 > Eventos criados por alunos são inicialmente inativos e precisam ser aprovados por um representante do curso.
 
