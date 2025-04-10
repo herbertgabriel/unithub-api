@@ -12,6 +12,40 @@
 
 ---
 
+## 🧭 Categorias e Roles
+
+### 📚 Categorias de Cursos e Eventos
+
+Cursos e eventos podem pertencer a uma das 5 categorias abaixo:
+
+| ID  | Categoria   |
+|-----|-------------|
+| 1L  | Tecnologia  |
+| 2L  | Saúde       |
+| 3L  | Engenharia  |
+| 4L  | Humanas     |
+| 5L  | Exatas      |
+
+---
+
+### 👥 Tipos de Usuário (Roles)
+
+A plataforma possui 4 tipos de usuários com permissões diferentes:
+
+| ID  | Role                | Permissões |
+|-----|---------------------|------------|
+| 1L  | `ADMIN`             | Gerencia todos os usuários, cursos e posts de eventos da plataforma |
+| 2L  | `ORGANIZADOR`       | Gerencia post de eventos, inscrições, promove alunos a representantes e cria eventos oficiais |
+| 3L  | `ALUNO`             | Cria eventos não oficiais (precisa de aprovação), inscreve-se em eventos, acessa o feed |
+| 4L  | `ALUNO_REPRESENTANTE` | Aprova ou reprova eventos do seu curso |
+
+---
+
+> ✅ **Observação**:  
+> Eventos criados por alunos são inicialmente inativos e precisam ser aprovados por um representante do curso.
+
+---
+
 ## 🔐 Autenticação (`AuthControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
