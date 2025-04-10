@@ -4,24 +4,22 @@ import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
 import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
 import com.unithub.model.Category;
 import com.unithub.repository.EventRepository;
-import com.unithub.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class FeedService {
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public FeedService(EventRepository eventRepository, UserRepository userRepository) {
+    public FeedService(EventRepository eventRepository, AuthService authService) {
         this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
+        this.authService = authService;
     }
 
     public FeedDTO getFeed(int page, int pageSize, boolean isActive) {
@@ -45,12 +43,9 @@ public class FeedService {
 
     // Funcionalidade para user ver todos seus proprios posts
     public List<FeedItemDTO> getSelfPostFeed(JwtAuthenticationToken authentication) {
-        UUID userId = UUID.fromString(authentication.getName());
+        var usuario = authService.getAuthenticatedUser(authentication);
 
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return eventRepository.findByCreatorUserOrderByCreationTimeStampDesc(user)
+        return eventRepository.findByCreatorUserOrderByCreationTimeStampDesc(usuario)
                 .stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),
@@ -65,12 +60,10 @@ public class FeedService {
     }
 
     public FeedDTO getFeedByUserCourse(int page, int pageSize, boolean isActive, JwtAuthenticationToken authentication) {
-        UUID userId = UUID.fromString(authentication.getName());
 
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
-        var userCourse = user.getCourse();
+        var userCourse = usuario.getCourse();
         var userCategory = userCourse != null ? userCourse.getCategoria() : null;
 
         var eventsPage = eventRepository.findAllByActive(isActive, PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "creationTimeStamp"));
@@ -104,12 +97,10 @@ public class FeedService {
     }
 
     public List<FeedItemDTO> getSubscribedEvents(JwtAuthenticationToken authentication) {
-        UUID userId = UUID.fromString(authentication.getName());
 
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
-        return user.getEvents().stream()
+        return usuario.getEvents().stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),
                         event.getTitle(),

@@ -14,6 +14,7 @@ import com.unithub.repository.RoleRepository;
 import com.unithub.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,16 @@ public class UserService {
     private final CourseRepository courseRepository;
     private final ImageService imageService;
     private final EventRepository eventRepository;
+    private final AuthService authService;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, CourseRepository courseRepository, ImageService imageService, EventRepository eventRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, CourseRepository courseRepository, ImageService imageService, EventRepository eventRepository, AuthService authService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.courseRepository = courseRepository;
         this.imageService = imageService;
         this.eventRepository = eventRepository;
+        this.authService = authService;
     }
 
     @Transactional
@@ -76,8 +79,7 @@ public class UserService {
 
     @Transactional
     public void redefinirSenha(RedefinirSenhaDTO dto, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         usuario.setPassword(bCryptPasswordEncoder.encode(dto.password()));
 
@@ -87,9 +89,8 @@ public class UserService {
     // ADMIN
     @Transactional
     public void alterarRoleUsuario(AlterarRoleDTO dto, JwtAuthenticationToken authentication) {
-        var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-    
+        var usuarioAutenticado = authService.getAuthenticatedUser(authentication);
+
         boolean isAdmin = usuarioAutenticado.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
     
@@ -101,7 +102,7 @@ public class UserService {
         }
     
         var usuario = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     
         if (usuario.getRoles().stream().anyMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
@@ -122,9 +123,9 @@ public class UserService {
 
     @Transactional
     public List<ListarUsersResponseDTO> listarUsuariosPorRole(long roleId, JwtAuthenticationToken authentication) {
-        var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-    
+        var usuarioAutenticado = authService.getAuthenticatedUser(authentication);
+
+
         boolean isAdmin = usuarioAutenticado.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
         boolean isOrganizador = usuarioAutenticado.getRoles().stream()
@@ -155,9 +156,8 @@ public class UserService {
 
     @Transactional
     public void deletarUsuario(UUID userId, JwtAuthenticationToken authentication) {
-        var usuarioAutenticado = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-    
+        var usuarioAutenticado = authService.getAuthenticatedUser(authentication);
+
         if (usuarioAutenticado.getRoles().stream().noneMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");

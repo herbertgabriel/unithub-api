@@ -4,38 +4,38 @@ import com.unithub.model.Category;
 import com.unithub.model.Course;
 import com.unithub.model.Role;
 import com.unithub.repository.CourseRepository;
-import com.unithub.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public CourseService(CourseRepository courseRepository, UserRepository userRepository) {
+    public CourseService(CourseRepository courseRepository, AuthService authService) {
         this.courseRepository = courseRepository;
-        this.userRepository = userRepository;
+        this.authService = authService;
     }
 
     // Adicionar Admin
     @Transactional
     public Course criarCurso(String nome, long categoriaId, JwtAuthenticationToken authentication) {
 
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         var isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
         if(!isOrganizadorOrAdmin){
-            throw new RuntimeException("You don't have permission");
+            throw new AccessDeniedException("You don't have permission");
         }
 
         Category categoria = Category.fromId(categoriaId);
@@ -50,19 +50,18 @@ public class CourseService {
     @Transactional
     public void deletarCurso(Long cursoId, JwtAuthenticationToken authentication) {
 
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         var isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
         if(!isOrganizadorOrAdmin){
-            throw new RuntimeException("You don't have permission");
+            throw new AccessDeniedException("You don't have permission");
         }
 
         var curso = courseRepository.findById(cursoId)
-                .orElseThrow(() -> new RuntimeException("Curso not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Curso not found"));
         courseRepository.delete(curso);
     }
 

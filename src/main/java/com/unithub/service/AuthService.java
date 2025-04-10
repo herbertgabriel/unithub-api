@@ -4,17 +4,21 @@ import com.unithub.dto.EmailDTO;
 import com.unithub.dto.userDTOs.loginDTOs.LoginRecoverDTO;
 import com.unithub.dto.userDTOs.loginDTOs.LoginRequestDTO;
 import com.unithub.dto.userDTOs.loginDTOs.LoginResponseDTO;
+import com.unithub.exception.AuthenticationException;
 import com.unithub.model.Role;
+import com.unithub.model.User;
 import com.unithub.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +68,7 @@ public class AuthService {
     public void recuperarSenha(LoginRecoverDTO dto) {
         var user = userRepository.findByEmail(dto.email());
         if (user.isEmpty()) {
-            throw new BadCredentialsException("Invalid email or password");
+            throw new BadCredentialsException("Invalid email");
         }
 
         var now = Instant.now();
@@ -91,4 +95,10 @@ public class AuthService {
         EmailDTO emailDTO = new EmailDTO(dto.email(), "UnitHub - Recuperar Senha", mensagem);
         emailService.sendEmail(emailDTO);
     }
+
+    public User getAuthenticatedUser(JwtAuthenticationToken authentication) {
+        return userRepository.findById(UUID.fromString(authentication.getName()))
+                .orElseThrow(() -> new AuthenticationException("Authenticated user not found"));
+    }
+
 }

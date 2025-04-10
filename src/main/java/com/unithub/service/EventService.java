@@ -1,5 +1,6 @@
 package com.unithub.service;
 
+import com.unithub.exception.EventNotFoundException;
 import com.unithub.exception.ImageUploadException;
 import com.unithub.dto.EmailDTO;
 import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
@@ -14,9 +15,12 @@ import com.unithub.model.Role;
 import com.unithub.repository.EventRepository;
 import com.unithub.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -31,20 +35,22 @@ public class EventService {
     private final EventRepository eventRepository;
     private final EmailService emailService;
     private final ImageService imageService;
+    private final AuthService authService;
 
 
-    public EventService(UserRepository userRepository, EventRepository eventRepository, EmailService emailService, ImageService imageService) {
+    public EventService(UserRepository userRepository, EventRepository eventRepository, EmailService emailService, ImageService imageService, AuthService authService) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.emailService = emailService;
         this.imageService = imageService;
+        this.authService = authService;
     }
 
     // Funcionalidade de cadastro de eventos
     @Transactional
     public EventDetailsDTO cadastrarEvento(CadastrarEventoDTO dados, List<MultipartFile> imagens, JwtAuthenticationToken authentication) throws ImageUploadException {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         Event event = new Event();
 
@@ -78,7 +84,7 @@ public class EventService {
 
         if (imagens != null && !imagens.isEmpty()) {
             if (imagens.size() > 4) {
-                throw new IllegalArgumentException("O evento pode ter no máximo 4 imagens.");
+                throw new ImageUploadException("O evento pode ter no máximo 4 imagens.");
             }
 
             for (MultipartFile imagem : imagens) {
@@ -108,18 +114,17 @@ public class EventService {
 
     @Transactional
     public EventDetailsDTO atualizarEvento(UUID eventId, AtualizarEventoDTO dados, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         var event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         var isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
         if (event.isActive() && !isOrganizadorOrAdmin) {
-            throw new RuntimeException("You don't have permission to update this active event");
+            throw new AccessDeniedException("You don't have permission to update this active event");
         }
 
         if (dados.title() != null) {
@@ -167,9 +172,10 @@ public class EventService {
 
     @Transactional
     public void deletarEvento(UUID eventId, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        var event = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
+
+        var event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         var isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
@@ -181,7 +187,7 @@ public class EventService {
 
             eventRepository.delete(event);
         } else {
-            throw new RuntimeException("You don't have permission to delete this event");
+            throw new AccessDeniedException("You don't have permission to delete this event");
         }
     }
 
@@ -189,11 +195,10 @@ public class EventService {
     // Necessario Integrar API com e-mail informando motivo do recuso
     @Transactional
     public void aceitarEvento(UUID eventId, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    
+        var usuario = authService.getAuthenticatedUser(authentication);
+
         var evento = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
     
         boolean isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
@@ -205,12 +210,12 @@ public class EventService {
         if (isAlunoRepresentante) {
             if (usuario.getCourse() == null || evento.getCreatorUser().getCourse() == null ||
                     !usuario.getCourse().equals(evento.getCreatorUser().getCourse())) {
-                throw new RuntimeException("You don't have permission to accept events outside your course");
+                throw new AccessDeniedException("You don't have permission to accept events outside your course");
             }
         }
     
         if (!isOrganizadorOrAdmin && !isAlunoRepresentante) {
-            throw new RuntimeException("You don't have permission to accept this event");
+            throw new AccessDeniedException("You don't have permission to accept this event");
         }
     
         var email = evento.getCreatorUser().getEmail();
@@ -223,11 +228,10 @@ public class EventService {
 
     @Transactional
     public void recusarEvento(UUID eventId, RecusarEventoDTO recusar, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
     
         var evento = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
     
         boolean isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
@@ -239,12 +243,12 @@ public class EventService {
         if (isAlunoRepresentante) {
             if (usuario.getCourse() == null || evento.getCreatorUser().getCourse() == null ||
                     !usuario.getCourse().equals(evento.getCreatorUser().getCourse())) {
-                throw new RuntimeException("You don't have permission to reject events outside your course");
+                throw new AccessDeniedException("You don't have permission to reject events outside your course");
             }
         }
     
         if (!isOrganizadorOrAdmin && !isAlunoRepresentante) {
-            throw new RuntimeException("You don't have permission to reject this event");
+            throw new AccessDeniedException("You don't have permission to reject this event");
         }
     
         var email = evento.getCreatorUser().getEmail();
@@ -257,22 +261,21 @@ public class EventService {
     // Funcionalidade de Inscrição em evento e desinscrição
     @Transactional
     public InscricaoResponseDTO subscribeEvent(UUID eventId, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         var evento = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         if (evento.getMaxParticipants() == 0){
-            throw new RuntimeException("Isn't possible to subscribe event");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Isn't possible to subscribe event");
         }
 
         if (evento.getEnrolledUserList().contains(usuario)) {
-            throw new RuntimeException("User is already enrolled in the event");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"User is already enrolled in the event");
         }
 
         if (evento.getEnrolledUserList().size() >= evento.getMaxParticipants()) {
-            throw new RuntimeException("Maximum participants exceeded");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Maximum participants exceeded");
         }
 
         evento.addUser(usuario);
@@ -283,18 +286,17 @@ public class EventService {
 
     @Transactional
     public void unsubscribeEvent(UUID eventId, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
 
         var evento = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         if (evento.getMaxParticipants() == 0){
-            throw new RuntimeException("Isn't possible to unsubscribe event");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Isn't possible to unsubscribe event");
         }
 
         if (!evento.getEnrolledUserList().contains(usuario)) {
-            throw new RuntimeException("User isn't enrolled in the event");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User isn't enrolled in the event");
         }
 
         evento.removeUser(usuario);
@@ -302,15 +304,17 @@ public class EventService {
     }
 
     public List<InscricoesListDTO> getSubscribers(UUID eventId, JwtAuthenticationToken authentication) {
-        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        var event = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
+        var usuario = authService.getAuthenticatedUser(authentication);
+
+        var event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Event not found"));
+
 
         var isOrganizadorOrAdmin = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
         if (!isOrganizadorOrAdmin) {
-            throw new RuntimeException("You don't have permission");
+            throw new AccessDeniedException("You don't have permission");
         }
 
         List<InscricoesListDTO> subscribers = event.getEnrolledUserList().stream()
@@ -318,7 +322,7 @@ public class EventService {
                 .collect(Collectors.toList());
 
         if (subscribers.isEmpty()) {
-            throw new RuntimeException("No subscribers found for this event");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No subscribers found for this event");
         }
 
         return subscribers;
