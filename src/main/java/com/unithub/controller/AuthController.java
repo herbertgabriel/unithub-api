@@ -7,10 +7,10 @@ import com.unithub.dto.userDTOs.loginDTOs.LoginResponseDTO;
 import com.unithub.dto.userDTOs.CreateUserDTO;
 import com.unithub.service.AuthService;
 import com.unithub.service.UserService;
-import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +42,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reset-password")
+    @PatchMapping("/reset-password")
     public ResponseEntity<Void> redefinirSenha(@RequestBody RedefinirSenhaDTO dto, JwtAuthenticationToken authentication) {
         userService.redefinirSenha(dto, authentication);
         return ResponseEntity.ok().build();

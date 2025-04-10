@@ -4,6 +4,7 @@ import com.unithub.dto.CriarCursoDTO;
 import com.unithub.model.Category;
 import com.unithub.model.Course;
 import com.unithub.service.CourseService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cursos")
+@RequestMapping("/courses")
 public class CourseController {
 
     private final CourseService courseService;
@@ -21,9 +22,9 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> criarCurso(@RequestBody CriarCursoDTO dto, JwtAuthenticationToken authentication) {
-        Course novoCurso = courseService.criarCurso(dto.nome(), dto.categoriaId(), authentication);
-        return ResponseEntity.ok(novoCurso);
+    public ResponseEntity<Void> criarCurso(@RequestBody CriarCursoDTO dto, JwtAuthenticationToken authentication) {
+        courseService.criarCurso(dto.nome(), dto.categoriaId(), authentication);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{cursoId}")
@@ -38,7 +39,7 @@ public class CourseController {
         return ResponseEntity.ok(cursos);
     }
 
-    @GetMapping("/categorias")
+    @GetMapping("/categories")
     public ResponseEntity<List<Category>> listarCategorias() {
         List<Category> categorias = courseService.listarCategorias();
         return ResponseEntity.ok(categorias);

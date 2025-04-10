@@ -102,4 +102,25 @@ public class FeedService {
 
         return new FeedDTO(feedItems, page, pageSize, eventsPage.getTotalPages(), eventsPage.getTotalElements());
     }
+
+    public List<FeedItemDTO> getSubscribedEvents(JwtAuthenticationToken authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getEvents().stream()
+                .map(event -> new FeedItemDTO(
+                        event.getEventId(),
+                        event.getTitle(),
+                        event.getDescription(),
+                        event.getDateTime(),
+                        event.getLocation(),
+                        event.getCategorias().stream().map(Category::getDescricao).collect(Collectors.toSet()), // Converte categorias para strings
+                        event.isActive(),
+                        event.getImages()
+                ))
+                .collect(Collectors.toList());
+    }
+
 }

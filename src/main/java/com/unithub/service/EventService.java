@@ -301,9 +301,17 @@ public class EventService {
         eventRepository.save(evento);
     }
 
-    public List<InscricoesListDTO> getSubscribers(UUID eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+    public List<InscricoesListDTO> getSubscribers(UUID eventId, JwtAuthenticationToken authentication) {
+        var usuario = userRepository.findById(UUID.fromString(authentication.getName()))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        var event = eventRepository.findById(eventId).orElseThrow(() -> new RuntimeException("Event not found"));
+
+        var isOrganizadorOrAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
+                        role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
+        if (!isOrganizadorOrAdmin) {
+            throw new RuntimeException("You don't have permission");
+        }
 
         List<InscricoesListDTO> subscribers = event.getEnrolledUserList().stream()
                 .map(user -> new InscricoesListDTO(user.getUserId(), user.getName(), user.getTelephone(), user.getEmail()))

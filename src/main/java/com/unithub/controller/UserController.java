@@ -20,14 +20,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/change-role")
+    @PatchMapping("/change-role")
     public ResponseEntity<Void> alterarRoleUsuario(@RequestBody AlterarRoleDTO dto, JwtAuthenticationToken authentication) {
         userService.alterarRoleUsuario(dto, authentication);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/by-role")
-    public ResponseEntity<List<ListarUsersResponseDTO>> listarUsuariosPorRole(@RequestParam long roleId, JwtAuthenticationToken authentication) {
+    @GetMapping("/role/{roleId}")
+    public ResponseEntity<List<ListarUsersResponseDTO>> listarUsuariosPorRole(@PathVariable long roleId, JwtAuthenticationToken authentication) {
         List<ListarUsersResponseDTO> usuarios = userService.listarUsuariosPorRole(roleId, authentication);
         return ResponseEntity.ok(usuarios);
     }
@@ -38,7 +38,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // CRUD Gerenciamento de Representantes
 
 
 }
