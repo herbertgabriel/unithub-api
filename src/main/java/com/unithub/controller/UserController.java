@@ -1,7 +1,7 @@
 package com.unithub.controller;
 
-import com.unithub.dto.userDTOs.AlterarRoleDTO;
-import com.unithub.dto.userDTOs.ListarUsersResponseDTO;
+import com.unithub.dto.request.userManagment.AlterarRoleDTO;
+import com.unithub.dto.respose.userManagment.ListarUsersResponseDTO;
 import com.unithub.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;

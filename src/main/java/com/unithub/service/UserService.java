@@ -1,9 +1,9 @@
 package com.unithub.service;
 
-import com.unithub.dto.userDTOs.AlterarRoleDTO;
-import com.unithub.dto.userDTOs.CreateUserDTO;
-import com.unithub.dto.userDTOs.ListarUsersResponseDTO;
-import com.unithub.dto.userDTOs.RedefinirSenhaDTO;
+import com.unithub.dto.request.userManagment.AlterarRoleDTO;
+import com.unithub.dto.request.login.CreateUserDTO;
+import com.unithub.dto.respose.userManagment.ListarUsersResponseDTO;
+import com.unithub.dto.request.login.RedefinirSenhaDTO;
 import com.unithub.model.Course;
 import com.unithub.model.Event;
 import com.unithub.model.Role;

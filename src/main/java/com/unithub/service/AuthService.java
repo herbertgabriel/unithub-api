@@ -1,9 +1,9 @@
 package com.unithub.service;
 
-import com.unithub.dto.EmailDTO;
-import com.unithub.dto.userDTOs.loginDTOs.LoginRecoverDTO;
-import com.unithub.dto.userDTOs.loginDTOs.LoginRequestDTO;
-import com.unithub.dto.userDTOs.loginDTOs.LoginResponseDTO;
+import com.unithub.dto.request.email.EmailDTO;
+import com.unithub.dto.request.login.LoginRecoverDTO;
+import com.unithub.dto.request.login.LoginRequestDTO;
+import com.unithub.dto.respose.login.LoginResponseDTO;
 import com.unithub.exception.AuthenticationException;
 import com.unithub.model.Role;
 import com.unithub.model.User;

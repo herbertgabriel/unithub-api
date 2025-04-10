@@ -1,4 +1,4 @@
-package com.unithub.dto.request;
+package com.unithub.dto.request.userManagment;
 
 import java.util.UUID;
 

@@ -1,12 +1,12 @@
 package com.unithub.controller;
 
 import com.unithub.exception.ImageUploadException;
-import com.unithub.dto.eventsDTOs.AtualizarEventoDTO;
-import com.unithub.dto.eventsDTOs.CadastrarEventoDTO;
-import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
-import com.unithub.dto.eventsDTOs.Inscricao.InscricaoResponseDTO;
-import com.unithub.dto.eventsDTOs.EventDetailsDTO;
-import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
+import com.unithub.dto.request.event.AtualizarEventoDTO;
+import com.unithub.dto.request.event.CadastrarEventoDTO;
+import com.unithub.dto.respose.feed.FeedItemDTO;
+import com.unithub.dto.respose.subscribe.InscricaoResponseDTO;
+import com.unithub.dto.respose.event.EventDetailsDTO;
+import com.unithub.dto.respose.feed.FeedDTO;
 import com.unithub.service.EventService;
 import com.unithub.service.FeedService;
 import org.springframework.http.MediaType;

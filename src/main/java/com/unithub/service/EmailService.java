@@ -1,6 +1,6 @@
 package com.unithub.service;
 
-import com.unithub.dto.EmailDTO;
+import com.unithub.dto.request.email.EmailDTO;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

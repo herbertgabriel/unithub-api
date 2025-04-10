@@ -1,6 +1,6 @@
 package com.unithub.controller;
 
-import com.unithub.dto.CriarCursoDTO;
+import com.unithub.dto.request.course.CriarCursoDTO;
 import com.unithub.model.Category;
 import com.unithub.model.Course;
 import com.unithub.service.CourseService;

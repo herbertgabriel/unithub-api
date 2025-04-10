@@ -1,4 +1,4 @@
-package com.unithub.dto.respose;
+package com.unithub.dto.respose.userManagment;
 
 import java.util.UUID;
 

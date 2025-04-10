@@ -1,10 +1,10 @@
 package com.unithub.controller;
 
-import com.unithub.dto.userDTOs.RedefinirSenhaDTO;
-import com.unithub.dto.userDTOs.loginDTOs.LoginRecoverDTO;
-import com.unithub.dto.userDTOs.loginDTOs.LoginRequestDTO;
-import com.unithub.dto.userDTOs.loginDTOs.LoginResponseDTO;
-import com.unithub.dto.userDTOs.CreateUserDTO;
+import com.unithub.dto.request.login.RedefinirSenhaDTO;
+import com.unithub.dto.request.login.LoginRecoverDTO;
+import com.unithub.dto.request.login.LoginRequestDTO;
+import com.unithub.dto.respose.login.LoginResponseDTO;
+import com.unithub.dto.request.login.CreateUserDTO;
 import com.unithub.service.AuthService;
 import com.unithub.service.UserService;
 import org.springframework.http.HttpStatus;

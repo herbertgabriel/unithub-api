@@ -1,7 +1,7 @@
 package com.unithub.service;
 
-import com.unithub.dto.eventsDTOs.Feed.FeedDTO;
-import com.unithub.dto.eventsDTOs.Feed.FeedItemDTO;
+import com.unithub.dto.respose.feed.FeedDTO;
+import com.unithub.dto.respose.feed.FeedItemDTO;
 import com.unithub.model.Category;
 import com.unithub.repository.EventRepository;
 import org.springframework.data.domain.PageRequest;

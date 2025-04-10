@@ -1,4 +1,4 @@
-package com.unithub.dto.eventsDTOs;
+package com.unithub.dto.request.event;
 
 import jakarta.validation.constraints.NotBlank;
 

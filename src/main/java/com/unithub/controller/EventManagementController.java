@@ -1,9 +1,8 @@
 package com.unithub.controller;
 
-import com.unithub.dto.eventsDTOs.Inscricao.InscricoesListDTO;
-import com.unithub.dto.eventsDTOs.RecusarEventoDTO;
+import com.unithub.dto.respose.subscribe.InscricoesListDTO;
+import com.unithub.dto.request.event.RecusarEventoDTO;
 import com.unithub.service.EventService;
-import com.unithub.service.FeedService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
