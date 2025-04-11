@@ -1,4 +1,4 @@
-# 📚 UnitHub API Documentation
+# 📚 UnitHub API
 
 **Base URL:**  
 `http://localhost:8080`
@@ -40,7 +40,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | 4L  | `ALUNO_REPRESENTANTE` | Aprova ou reprova eventos do seu curso |
 
 > ✅ **Observação**:  
-> Eventos criados por alunos são inicialmente inativos e precisam ser aprovados por um representante do curso.
+> Eventos criados por alunos são inicialmente inativos e precisam ser aprovados por um representante do curso ou organizador.
 
 ---
 
