@@ -5,13 +5,9 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/cursos/categorias/alunos
-  body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  url: http://localhost:8080/courses/categories
+  body: none
+  auth: none
 }
 
 body:json {

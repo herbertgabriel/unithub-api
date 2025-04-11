@@ -1,11 +1,11 @@
 meta {
-  name: Deletar Evento
+  name: Eventos por Curso
   type: http
-  seq: 4
+  seq: 8
 }
 
-delete {
-  url: http://localhost:8080/events/
+get {
+  url: http://localhost:8080/events/feed-by-course
   body: none
   auth: bearer
 }

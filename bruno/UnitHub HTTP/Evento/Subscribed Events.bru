@@ -1,11 +1,11 @@
 meta {
-  name: Deletar Evento
+  name: Subscribed Events
   type: http
-  seq: 4
+  seq: 9
 }
 
-delete {
-  url: http://localhost:8080/events/
+get {
+  url: http://localhost:8080/events/subscribed
   body: none
   auth: bearer
 }

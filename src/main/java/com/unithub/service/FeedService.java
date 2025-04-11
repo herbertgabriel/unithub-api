@@ -97,10 +97,11 @@ public class FeedService {
     }
 
     public List<FeedItemDTO> getSubscribedEvents(JwtAuthenticationToken authentication) {
-
         var usuario = authService.getAuthenticatedUser(authentication);
-
-        return usuario.getEvents().stream()
+    
+        var subscribedEvents = eventRepository.findAllByEnrolledUserListContains(usuario);
+    
+        return subscribedEvents.stream()
                 .map(event -> new FeedItemDTO(
                         event.getEventId(),
                         event.getTitle(),

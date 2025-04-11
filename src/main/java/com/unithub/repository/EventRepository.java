@@ -16,5 +16,6 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     Page<Event> findAllByActive(boolean active, Pageable pageable);
     List<Event> findByCreatorUserOrderByCreationTimeStampDesc(User user);
     List<Event> findByCreatorUser(User creatorUser);
+    List<Event> findAllByEnrolledUserListContains(User user);
 
 }

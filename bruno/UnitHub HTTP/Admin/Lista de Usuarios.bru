@@ -5,13 +5,9 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/users/by-role?roleId=3
+  url: http://localhost:8080/users/role/
   body: none
   auth: bearer
-}
-
-params:query {
-  roleId: 3
 }
 
 auth:bearer {
