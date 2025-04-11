@@ -12,6 +12,7 @@ public record FeedItemDTO(
     String location,
     Set<String> category,
     boolean active,
+    boolean isOfficial,
     Set<String> images
 ) {
 }
