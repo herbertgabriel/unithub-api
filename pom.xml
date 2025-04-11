@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com</groupId>
 	<artifactId>unithub</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>unithub</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Esta API faz parte do sistema UnitHub, voltado para gerenciamento de cursos, usuarios e divulgacao de eventos universitarios.</description>
 	<url/>
 	<licenses>
 		<license/>
