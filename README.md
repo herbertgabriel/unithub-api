@@ -1,4 +1,4 @@
-# 📚 UnitHub API Documentation
+# 📚 UnitHub API
 
 **Base URL:**  
 `http://localhost:8080`
