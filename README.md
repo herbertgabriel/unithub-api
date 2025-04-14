@@ -153,4 +153,4 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-> ℹ️ Esta API é parte do sistema UnitHub, voltado para gerenciamento de cursos, usuários e eventos universitários.
+> Esta API é parte do sistema UnitHub, voltado para gerenciamento de cursos, usuários e eventos universitários.
