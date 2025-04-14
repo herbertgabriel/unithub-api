@@ -1,9 +1,9 @@
-# 📚 UnitHub API
+# UnitHub API
 
 **Base URL:**  
 `http://localhost:8080`
 
-## ⚙️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - Java 17  
 - Spring Boot 3.4.4  
@@ -12,9 +12,9 @@
 
 ---
 
-## 🧭 Categorias e Roles
+## Categorias e Roles
 
-### 📚 Categorias de Cursos e Eventos
+### Categorias de Cursos e Eventos
 
 Cursos e eventos podem pertencer a uma das 5 categorias abaixo:
 
@@ -28,7 +28,7 @@ Cursos e eventos podem pertencer a uma das 5 categorias abaixo:
 
 ---
 
-### 👥 Tipos de Usuário (Roles)
+### Tipos de Usuário (Roles)
 
 A plataforma possui 4 tipos de usuários com permissões diferentes:
 
@@ -39,7 +39,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | 3L  | `ALUNO`             | Cria eventos não oficiais (precisa de aprovação), inscreve-se em eventos, acessa o feed |
 | 4L  | `ALUNO_REPRESENTANTE` | Aprova ou reprova eventos do seu curso |
 
-> ✅ **Observação**:  
+> **Observação**:  
 > Eventos criados por alunos são inicialmente inativos e precisam ser aprovados por um representante do curso ou organizador.
 
 ---
@@ -66,7 +66,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## 👤 Usuários (`UserControllers`)
+## Usuários (`UserControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -87,7 +87,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## 📚 Cursos (`CourseControllers`)
+## Cursos (`CourseControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -105,7 +105,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## 📅 Eventos (`EventControllers`)
+## Eventos (`EventControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -134,7 +134,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## 🧑‍💼 Gerenciamento de Eventos (`EventManagmentControllers`)
+## Gerenciamento de Eventos (`EventManagmentControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
