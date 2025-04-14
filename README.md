@@ -44,7 +44,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## 🔐 Autenticação (`AuthControllers`)
+## Autenticação (`AuthControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|---------------|--------|
