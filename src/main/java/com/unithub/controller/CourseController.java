@@ -1,6 +1,7 @@
 package com.unithub.controller;
 
 import com.unithub.dto.request.course.CriarCursoDTO;
+import com.unithub.dto.request.course.EditarCursoDTO;
 import com.unithub.model.Category;
 import com.unithub.model.Course;
 import com.unithub.service.CourseService;
@@ -26,6 +27,14 @@ public class CourseController {
         courseService.criarCurso(dto.nome(), dto.categoriaId(), authentication);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PatchMapping("/{cursoId}")
+    public Course editarCurso(@PathVariable long cursoId,
+                              @RequestBody EditarCursoDTO dto,
+                              JwtAuthenticationToken authentication) {
+        return courseService.editarCurso(dto, cursoId, authentication);
+    }
+
 
     @DeleteMapping("/{cursoId}")
     public ResponseEntity<Void> deletarCurso(@PathVariable Long cursoId, JwtAuthenticationToken authentication) {

@@ -1,0 +1,27 @@
+meta {
+  name: Editar Curso
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:8080/courses/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+      "nome": "Engenharia de Software",
+      "categoriaId": "0"
+  }
+}
+
+body:multipart-form {
+  nome: Engenharia de Software
+  categoriaId: 1
+}
