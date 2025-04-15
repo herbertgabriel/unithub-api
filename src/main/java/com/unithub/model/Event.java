@@ -6,10 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_events")
@@ -44,7 +41,7 @@ public class Event {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "tb_event_images", joinColumns = @JoinColumn(name = "event_id"))
     @Column(name = "image_url")
-    private Set<String> images = new HashSet<>();
+    private Set<String> images = new LinkedHashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -53,6 +50,10 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> enrolledUserList;
+
+    @ManyToOne
+    @JoinColumn(name = "approved_by_user_id")
+    private User approvedBy;
 
     public void addUser(User user) {
         if (!enrolledUserList.contains(user)) {

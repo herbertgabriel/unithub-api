@@ -60,8 +60,12 @@ public class EventService {
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()) ||
                         role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
 
-        event.setActive(isOrganizador);
-        event.setOfficial(isOrganizador);
+
+        if(isOrganizador){
+            event.setActive(isOrganizador);
+            event.setOfficial(isOrganizador);
+            event.setApprovedBy(usuario);
+        }
 
         if (dados.maxParticipants() <= 0) {
             event.setMaxParticipants(0);
@@ -206,23 +210,28 @@ public class EventService {
     
         boolean isAlunoRepresentante = usuario.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ALUNO_REPRESENTANTE.name()));
-    
+
         if (isAlunoRepresentante) {
             if (usuario.getCourse() == null || evento.getCreatorUser().getCourse() == null ||
-                    !usuario.getCourse().equals(evento.getCreatorUser().getCourse())) {
-                throw new AccessDeniedException("You don't have permission to accept events outside your course");
+                    !usuario.getCourse().getCategoria().equals(evento.getCreatorUser().getCourse().getCategoria())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to accept events outside your course");
             }
         }
     
         if (!isOrganizadorOrAdmin && !isAlunoRepresentante) {
             throw new AccessDeniedException("You don't have permission to accept this event");
         }
+
+        if (evento.isActive()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event already active");
+        }
     
         var email = evento.getCreatorUser().getEmail();
         EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi aprovado!", "Parabéns, seu evento foi aprovado com sucesso!");
         emailService.sendEmail(emailDTO);
-    
+
         evento.setActive(true);
+        evento.setApprovedBy(usuario);
         eventRepository.save(evento);
     }
 
@@ -242,15 +251,20 @@ public class EventService {
     
         if (isAlunoRepresentante) {
             if (usuario.getCourse() == null || evento.getCreatorUser().getCourse() == null ||
-                    !usuario.getCourse().equals(evento.getCreatorUser().getCourse())) {
-                throw new AccessDeniedException("You don't have permission to reject events outside your course");
+                    !usuario.getCourse().getCategoria().equals(evento.getCreatorUser().getCourse().getCategoria())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to reject events outside your course");
+
             }
         }
     
         if (!isOrganizadorOrAdmin && !isAlunoRepresentante) {
             throw new AccessDeniedException("You don't have permission to reject this event");
         }
-    
+
+        if (evento.isActive()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event already active");
+        }
+
         var email = evento.getCreatorUser().getEmail();
         EmailDTO emailDTO = new EmailDTO(email, "UnitHub - Seu evento foi recusado", recusar.motivo());
         emailService.sendEmail(emailDTO);
@@ -276,6 +290,10 @@ public class EventService {
 
         if (evento.getEnrolledUserList().size() >= evento.getMaxParticipants()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Maximum participants exceeded");
+        }
+
+        if (evento.isActive()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event isn't active");
         }
 
         evento.addUser(usuario);

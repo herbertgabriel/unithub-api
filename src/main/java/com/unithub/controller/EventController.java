@@ -104,6 +104,16 @@ public class EventController {
         return ResponseEntity.ok(feed);
     }
 
+    @GetMapping("/feed-by-course-creator")
+    public ResponseEntity<FeedDTO> feedByCourseCreator(
+            @RequestParam(value = "pages", defaultValue = "1") int pages,
+            @RequestParam(value = "per_page", defaultValue = "10") int per_page,
+            @RequestParam(value = "isActive", defaultValue = "true") boolean isActive,
+            JwtAuthenticationToken authentication) {
+        FeedDTO feed = feedService.getFeedByUserCreatorCourse(pages, per_page, isActive, authentication);
+        return ResponseEntity.ok(feed);
+    }
+
     // Inscrição em eventos
     @PostMapping("/subscribe/{eventId}")
     public ResponseEntity<InscricaoResponseDTO> subscribeEvent(@PathVariable UUID eventId, JwtAuthenticationToken authentication) {

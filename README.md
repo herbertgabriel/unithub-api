@@ -114,7 +114,8 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | PATCH | `/events/{eventId}` | Atualiza evento | `eventId`, dados do evento | ✅ JWT | 200 |
 | DELETE | `/events/{eventId}` | Deleta evento | `eventId` | ✅ JWT | 204 |
 | GET | `/events/feed` | Lista eventos ativos | - | ❌ | 200 |
-| GET | `/events/feed-by-course` | Lista eventos do curso do usuário | - | ✅ JWT | 200 |
+| GET | `/events/feed-by-course` | Lista eventos por categoria do curso do usuário autenticado | - | ✅ JWT | 200 |
+| GET | `/events/feed-by-course-creator` | Lista eventos criados por usuários do mesmo curso que usuário autenticado  | - | ✅ JWT | 200 |
 | POST | `/events/subscribe/{eventId}` | Inscreve usuário no evento | `eventId` | ✅ JWT | 200 |
 | POST | `/events/unsubscribe/{eventId}` | Remove inscrição do evento | `eventId` | ✅ JWT | 200 |
 | GET | `/events/subscribed` | Lista eventos inscritos | - | ✅ JWT | 200 |

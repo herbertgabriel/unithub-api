@@ -95,7 +95,6 @@ public class FeedService {
                         event.getImages()
                 ))
                 .collect(Collectors.toList());
-
         return new FeedDTO(feedItems, page, pageSize, eventsPage.getTotalPages(), eventsPage.getTotalElements());
     }
 
@@ -117,6 +116,36 @@ public class FeedService {
                         event.getImages()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public FeedDTO getFeedByUserCreatorCourse(int page, int pageSize, boolean isActive, JwtAuthenticationToken authentication) {
+
+        var usuario = authService.getAuthenticatedUser(authentication);
+
+        var userCourse = usuario.getCourse();
+        var userCategory = userCourse != null ? userCourse.getCategoria() : null;
+
+        var eventsPage = eventRepository.findAllByActive(isActive, PageRequest.of(page - 1, pageSize, Sort.Direction.DESC, "creationTimeStamp"));
+
+        var feedItems = eventsPage.getContent().stream()
+                .filter(event -> {
+                    var creatorCourse = event.getCreatorUser().getCourse();
+                    return creatorCourse != null && creatorCourse.getCategoria().equals(userCategory);
+                })
+                .map(event -> new FeedItemDTO(
+                        event.getEventId(),
+                        event.getTitle(),
+                        event.getDescription(),
+                        event.getDateTime(),
+                        event.getLocation(),
+                        event.getCategorias().stream().map(Category::getDescricao).collect(Collectors.toSet()), // Converte categorias para strings
+                        event.isActive(),
+                        event.isOfficial(),
+                        event.getImages()
+                ))
+                .collect(Collectors.toList());
+
+        return new FeedDTO(feedItems, page, pageSize, eventsPage.getTotalPages(), eventsPage.getTotalElements());
     }
 
 }
