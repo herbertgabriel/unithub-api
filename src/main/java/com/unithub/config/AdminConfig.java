@@ -25,31 +25,36 @@ public class AdminConfig implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Verifica se a role ADMIN existe
-        Role roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
-        if (roleAdmin == null) {
-            // Cria a role ADMIN caso não exista
-            roleAdmin = new Role();
-            roleAdmin.setName(Role.Values.ADMIN.name());
-            roleAdmin = roleRepository.save(roleAdmin);
-            System.out.println("Role ADMIN criada com sucesso.");
+        
+        // Verifica e cria as roles padrão, se necessário
+        for (Role.Values roleValue : Role.Values.values()) {
+            Role role = roleRepository.findByName(roleValue.name());
+            if (role == null) {
+                role = new Role();
+                role.setName(roleValue.name());
+                roleRepository.save(role);
+                System.out.println("Role " + roleValue.name() + " criada com sucesso.");
+            }
         }
 
         // Verifica se o usuário admin já existe
         var userAdmin = userRepository.findByEmail("admin@example.com");
         if (userAdmin.isEmpty()) {
+            Role roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
+            if (roleAdmin == null) {
+                throw new RuntimeException("Role ADMIN não encontrada. Verifique a configuração.");
+            }
+
             // Cria o usuário admin caso não exista
             var user = new User();
-            user.setEmail("admin@example.com");
-            user.setPassword(bCryptPasswordEncoder.encode("senha123"));
-            user.setName("admin");
-            user.setTelephone("81987654321");
+            user.setEmail("admin@example.com"); // Coloque E-mail do Admin
+            user.setPassword(bCryptPasswordEncoder.encode("senha123")); // Coloque uma senha provisoria
+            user.setName("admin"); //Coloque nome do Usuário
             user.setRoles(Set.of(roleAdmin)); // Associa a role ADMIN ao usuário
             userRepository.save(user);
             System.out.println("Usuário admin criado com sucesso.");
         } else {
             System.out.println("Usuário admin já existe.");
         }
-
     }
 }
