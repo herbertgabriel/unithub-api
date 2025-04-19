@@ -109,8 +109,10 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 > Eventos criados por alunos são inicialmente inativos e precisam ser aprovados por um representante do curso ou organizador.
 
 ---
+## Documentação da API
+> Você pode consultar os endpoints pelo swagger http://localhost:8080/swagger-ui/index.html
 
-## Autenticação (`AuthControllers`)
+#### Autenticação (`AuthControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|---------------|--------|
@@ -119,7 +121,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | POST | `/recover-password` | Envia e-mail com token de recuperação | `email` | ❌ | 200 |
 | PATCH | `/reset-password` | Altera a senha com token | `novaSenha` | ✅ JWT | 200 |
 
-### 🛑 Erros Comuns
+#### 🛑 Erros Comuns
 
 | Código | Mensagem | Causa |
 |--------|----------|--------|
@@ -132,7 +134,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## Usuários (`UserControllers`)
+### Usuários (`UserControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -142,7 +144,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | GET | `/users/profile` | Mostra informações do usuário autenticado | - | ✅ JWT | 200 |
 | PATCH | `/users/profile` | Mostra informações do usuário autenticado | `email`, `senha`, `confirmaçãoSenha`, `telefone` | ✅ JWT | 200 |
 
-### 🛑 Erros Comuns
+#### 🛑 Erros Comuns
 
 | Código | Mensagem | Causa |
 |--------|----------|--------|
@@ -155,7 +157,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## Cursos (`CourseControllers`)
+### Cursos (`CourseControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -165,7 +167,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | PATCH | `/courses/{cursoId}` | Atualiza Evento | `cursoId` | ✅ JWT | 200 |
 | DELETE | `/courses/{cursoId}` | Deleta um curso | `cursoId` | ✅ JWT | 204 |
 
-### 🛑 Erros Comuns
+#### 🛑 Erros Comuns
 
 | Código | Mensagem | Causa |
 |--------|----------|--------|
@@ -174,7 +176,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## Eventos (`EventControllers`)
+### Eventos (`EventControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -189,7 +191,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | POST | `/events/unsubscribe/{eventId}` | Remove inscrição do evento | `eventId` | ✅ JWT | 200 |
 | GET | `/events/subscribed` | Lista eventos inscritos | - | ✅ JWT | 200 |
 
-### 🛑 Erros Comuns
+#### 🛑 Erros Comuns
 
 | Código | Mensagem | Causa |
 |--------|----------|--------|
@@ -204,7 +206,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 
 ---
 
-## Gerenciamento de Eventos (`EventManagmentControllers`)
+### Gerenciamento de Eventos (`EventManagmentControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|--------------|--------|
@@ -212,7 +214,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | PATCH | `/managment/{eventId}` | Aprova evento (ativa) | `eventId` | ✅ JWT | 200 |
 | DELETE | `/managment/{eventId}` | Rejeita evento (motivo no corpo) | `eventId`, `motivo` | ✅ JWT | 204 |
 
-### 🛑 Erros Comuns
+#### 🛑 Erros Comuns
 
 | Código | Mensagem | Causa |
 |--------|----------|--------|
