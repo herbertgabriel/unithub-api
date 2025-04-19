@@ -81,7 +81,6 @@ Após o Spring Boot ser iniciado, a aplicação estará disponível em http://lo
 ---
 
 ## Categorias e Roles da API
-<iframe src="https://drive.google.com/file/d/1wheDlu2Od-gZlJwqh2NO6DeEjVmc8GZR/preview" width="640" height="480" allow="autoplay"></iframe>
 
 ### Categorias de Cursos e Eventos
 
