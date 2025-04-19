@@ -1,6 +1,6 @@
 # UnitHub API
 
-O UnitHub é uma plataforma web e mobile projetada para o gerenciamento de eventos acadêmicos, funcionando como um portal que facilita a divulgação de eventos, formulários, ações e outras atividades. Os alunos podem solicitar a publicação de posts na plataforma, e, caso aprovados pelos organizadores. O objetivo é otimizar a inscrição, gestão e divulgação, auxiliando a equipe de marketing e a gestão de eventos da universidade.
+O UnitHub é uma plataforma web e mobile projetada para o gerenciamento de eventos acadêmicos, funcionando como um portal que facilita a divulgação de eventos, formulários, ações e outras atividades. Os alunos podem solicitar a publicação de posts na plataforma, e, podem ser aprovados pelos alunos representantes ou organizadores. O objetivo é otimizar a inscrição, gestão e divulgação, auxiliando a equipe de marketing e a gestão de eventos da universidade.
 
 ## Tecnologias Utilizadas
 
