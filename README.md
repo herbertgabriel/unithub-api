@@ -139,6 +139,8 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | PATCH | `/users/change-role` | Altera a role do usuário | `idUsuario`, `idRole` | ✅ JWT | 200 |
 | GET | `/users/role/{roleId}` | Lista usuários por role | `roleId` | ✅ JWT | 200 |
 | DELETE | `/users/{userId}` | Deleta usuário | `userId` | ✅ JWT | 204 |
+| GET | `/users/profile` | Mostra informações do usuário autenticado | - | ✅ JWT | 200 |
+| PATCH | `/users/profile` | Mostra informações do usuário autenticado | `email`, `senha`, `confirmaçãoSenha`, `telefone` | ✅ JWT | 200 |
 
 ### 🛑 Erros Comuns
 
@@ -160,6 +162,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 | GET | `/courses/categories` | Lista categorias disponíveis | - | ❌ | 200 |
 | POST | `/courses` | Cria novo curso | `idCategoria`, `nomeCurso` | ✅ JWT | 201 |
 | GET | `/courses` | Lista todos os cursos | - | ❌ | 200 |
+| PATCH | `/courses/{cursoId}` | Atualiza Evento | `cursoId` | ✅ JWT | 200 |
 | DELETE | `/courses/{cursoId}` | Deleta um curso | `cursoId` | ✅ JWT | 204 |
 
 ### 🛑 Erros Comuns

@@ -1,0 +1,15 @@
+meta {
+  name: Desinscrever do Evento
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/events/unsubscribe/{id}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

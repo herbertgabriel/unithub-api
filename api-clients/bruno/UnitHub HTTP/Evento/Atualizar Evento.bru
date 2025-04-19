@@ -1,0 +1,27 @@
+meta {
+  name: Atualizar Evento
+  type: http
+  seq: 5
+}
+
+patch {
+  url: http://localhost:8080/events/{id}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Evento Testee",
+    "description": "Descrição do evento de teste",
+    "dateTime": "2025-06-01T10:00:00",
+    "location": "Local do evento",
+    "category": "Categoria do evento",
+    "maxParticipants": 3,
+    "categoriasIds": [1, 2]
+  }
+}

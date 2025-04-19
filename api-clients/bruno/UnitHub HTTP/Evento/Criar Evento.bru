@@ -1,0 +1,38 @@
+meta {
+  name: Criar Evento
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/events
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Evento",
+    "description": "Teste",
+    "dateTime": "2025-04-01T10:00:00",
+    "location": "Local",
+    "categoriaIds": [1],
+    "maxParticipants": 2
+  }
+}
+
+body:multipart-form {
+  title: ECO+NOMIA
+  description: O ECO+NOMIA é um projeto de extensão criado para promover a conscientização e facilitar o acesso a pontos de descarte adequado para materiais recicláveis.
+  dateTime: 2025-05-01T10:00:00
+  location: On-line
+  categoriaIds: 2
+  maxParticipants: 0
+  imagem2: @file(C:\Users\herbe\Desktop\Captura de tela 2025-04-18 164130.png)
+  ~imagem3: @file()
+  ~imagem4: @file()
+}

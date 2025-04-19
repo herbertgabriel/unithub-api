@@ -2,6 +2,8 @@ package com.unithub.service;
 
 import com.unithub.dto.request.userManagment.AlterarRoleDTO;
 import com.unithub.dto.request.login.CreateUserDTO;
+import com.unithub.dto.request.user.UpdateUserDTO;
+import com.unithub.dto.respose.user.UserDetailsDTO;
 import com.unithub.dto.respose.userManagment.ListarUsersResponseDTO;
 import com.unithub.dto.request.login.RedefinirSenhaDTO;
 import com.unithub.model.Course;
@@ -93,29 +95,29 @@ public class UserService {
 
         boolean isAdmin = usuarioAutenticado.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
-    
+
         boolean isOrganizador = usuarioAutenticado.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()));
-    
+
         if (!isAdmin && (!isOrganizador || (dto.roleId() != 3L && dto.roleId() != 4L))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
-    
+
         var usuario = userRepository.findById(dto.userId())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    
+
         if (usuario.getRoles().stream().anyMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot change admin user");
         }
-    
+
         var novaRole = roleRepository.findById(dto.roleId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
-    
+
         if (!isAdmin && dto.roleId() == Role.Values.ADMIN.getRoleId()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot assign admin role");
         }
-    
+
         usuario.getRoles().clear();
         usuario.getRoles().add(novaRole);
         userRepository.save(usuario);
@@ -130,18 +132,18 @@ public class UserService {
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()));
         boolean isOrganizador = usuarioAutenticado.getRoles().stream()
                 .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.ORGANIZADOR.name()));
-    
+
         if (!isAdmin && (!isOrganizador || (roleId != 3L && roleId != 4L))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
-    
+
         var role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found"));
-    
+
         var usuarios = userRepository.findAll().stream()
                 .filter(user -> user.getRoles().contains(role))
                 .toList();
-    
+
         return usuarios.stream()
                 .map(user -> new ListarUsersResponseDTO(
                         user.getUserId(),
@@ -162,27 +164,60 @@ public class UserService {
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission to perform this action");
         }
-    
+
         var usuario = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-    
+
         if (usuario.getRoles().stream().anyMatch(role ->
                 role.getName().equalsIgnoreCase(Role.Values.ADMIN.name()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot delete admin user");
         }
-    
+
         var eventosCriados = eventRepository.findByCreatorUser(usuario);
-    
+
         for (Event evento : eventosCriados) {
             imageService.deleteAllEventImages(evento);
         }
-    
+
         eventRepository.deleteAll(eventosCriados);
-    
+
         usuario.getRoles().clear();
         userRepository.save(usuario);
 
         userRepository.delete(usuario);
     }
 
+    public UserDetailsDTO getAuthenticatedUserProfile(JwtAuthenticationToken authentication) {
+        var usuario = authService.getAuthenticatedUser(authentication);
+
+        return new UserDetailsDTO(
+                usuario.getUserId(),
+                usuario.getName(),
+                usuario.getTelephone(),
+                usuario.getEmail()
+        );
+    }
+
+    @Transactional
+    public void updateUserProfile(UpdateUserDTO dto, JwtAuthenticationToken authentication) {
+        var usuario = authService.getAuthenticatedUser(authentication);
+
+        if (dto.email() != null) {
+            usuario.setEmail(dto.email());
+        }
+        if (dto.password() != null && dto.confirmPassword() != null) {
+            if (!dto.password().equals(dto.confirmPassword())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match");
+            }
+            usuario.setPassword(bCryptPasswordEncoder.encode(dto.password()));
+        }
+        if (dto.telephone() != null) {
+            usuario.setTelephone(dto.telephone());
+        }
+        if (dto.name() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name not allowed");
+        }
+
+        userRepository.save(usuario);
+    }
 }

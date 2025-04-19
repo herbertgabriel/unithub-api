@@ -1,6 +1,8 @@
 package com.unithub.controller;
 
 import com.unithub.dto.request.userManagment.AlterarRoleDTO;
+import com.unithub.dto.request.user.UpdateUserDTO;
+import com.unithub.dto.respose.user.UserDetailsDTO;
 import com.unithub.dto.respose.userManagment.ListarUsersResponseDTO;
 import com.unithub.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,15 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    // Usuario Autenticado Profile
+    @GetMapping("/profile")
+    public UserDetailsDTO getAuthenticatedUserProfile(JwtAuthenticationToken authentication) {
+        return userService.getAuthenticatedUserProfile(authentication);
+    }
 
+    @PatchMapping("/profile")
+    public void updateAuthenticatedUser(@RequestBody UpdateUserDTO dto, JwtAuthenticationToken authentication) {
+        userService.updateUserProfile(dto, authentication);
+    }
 
 }
