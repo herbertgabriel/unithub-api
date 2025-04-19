@@ -112,7 +112,7 @@ A plataforma possui 4 tipos de usuários com permissões diferentes:
 ## Documentação da API
 > Você pode consultar os endpoints pelo swagger http://localhost:8080/swagger-ui/index.html
 
-#### Autenticação (`AuthControllers`)
+### Autenticação (`AuthControllers`)
 
 | Método | Rota | Descrição | Requisição | Autenticação | Status |
 |--------|------|-----------|------------|---------------|--------|
