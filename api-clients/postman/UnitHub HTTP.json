@@ -824,7 +824,7 @@
               "type": "bearer",
               "bearer": {
                 "key": "token",
-                "value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJteWJhY2tlbmQiLCJzdWIiOiI3YWUwOWM0Ni0zZjBiLTQ1MTMtYjhiNC0xYjljNzhiYzU0MmYiLCJleHAiOjE3NDQ2Nzc5MDIsImlhdCI6MTc0NDY3NzgwMiwic2NvcGUiOiJhbHVubyJ9.Mt0i7a_H443o_5-UbwFiv4aO5WpOvyx0yM5-sT45Crg5U93YzLoe6DaVVWn6aQEfnAKXj76W_qleyt9EYz5DP18YQv35AVGyt3NXlGR0OEf072jEUH_woyMETi0qS_g30DY84iVeV8UGI7ID-Fu_fPiz98w86obTlMw4eo1T4Qxm0yoPAfmhTD3KlIYEQ6y3mjIWlJ7opoDMHHkn-5fNjV6a4cf-FikE1O8Ak8QAO15ukATxCOVwyhLUenyDhDN246t-NZYTOqc4SkreID9x6aaOFYG2Y6wKSuEYaSLFvJ2hEzy_2fsDR-yqNO5Vt8oztLT0flEydlJyHSAq7c2NWA",
+                "value": "",
                 "type": "string"
               }
             },
