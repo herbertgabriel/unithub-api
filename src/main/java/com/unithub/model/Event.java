@@ -25,6 +25,8 @@ public class Event {
     private User creatorUser;
 
     private String title;
+    
+    @Column(length = 500) // VARCHAR(500)
     private String description;
     private LocalDateTime dateTime;
     private String location;
