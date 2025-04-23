@@ -222,7 +222,7 @@ public class EventService {
             throw new AccessDeniedException("You don't have permission to accept this event");
         }
 
-        if (evento.isActive()) {
+        if (!evento.isActive()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event already active");
         }
     
