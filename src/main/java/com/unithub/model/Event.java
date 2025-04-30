@@ -46,7 +46,7 @@ public class Event {
     @Column(name = "image_url")
     private Set<String> images = new LinkedHashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tb_event_users",
             joinColumns = @JoinColumn(name = "event_id"),

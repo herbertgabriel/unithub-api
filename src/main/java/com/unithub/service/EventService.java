@@ -292,7 +292,7 @@ public class EventService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Maximum participants exceeded");
         }
 
-        if (evento.isActive()) {
+        if (!evento.isActive()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event isn't active");
         }
 
@@ -346,5 +346,25 @@ public class EventService {
         return subscribers;
     }
 
+    public EventDetailsDTO getEventById(UUID eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found with ID: " + eventId));
+
+        Set<String> categoriasAsStrings = event.getCategorias().stream()
+                .map(Category::getDescricao)
+                .collect(Collectors.toSet());
+
+        return new EventDetailsDTO(
+                event.getEventId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDateTime(),
+                event.getLocation(),
+                categoriasAsStrings,
+                event.isActive(),
+                event.getMaxParticipants(),
+                event.getImages()
+        );
+    }
 
 }

@@ -133,4 +133,9 @@ public class EventController {
         return ResponseEntity.ok(subscribedEvents);
     }
 
+    @GetMapping("/{eventId}")
+    public ResponseEntity<EventDetailsDTO> getEventById(@PathVariable UUID eventId) {
+        EventDetailsDTO eventDetails = eventService.getEventById(eventId);
+        return ResponseEntity.ok(eventDetails);
+    }
 }

@@ -41,6 +41,7 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults()) // Adiciona a configuração de CORS
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET, "/events/{eventId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/feed").permitAll()
                         .requestMatchers(HttpMethod.GET, "/courses/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/courses").permitAll()
