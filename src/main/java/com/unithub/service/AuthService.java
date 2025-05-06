@@ -90,7 +90,7 @@ public class AuthService {
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         String mensagem = "Para redefinir sua senha, clique no link abaixo:\n" +
-                "unithub.vercel.app/recover/" + jwtValue;
+                "https://unithub-frontend.vercel.app/recover/" + jwtValue;
 
         EmailDTO emailDTO = new EmailDTO(dto.email(), "UnitHub - Recuperar Senha", mensagem);
         emailService.sendEmail(emailDTO);
