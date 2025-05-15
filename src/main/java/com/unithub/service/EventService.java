@@ -110,6 +110,7 @@ public class EventService {
                 event.getDateTime(),
                 event.getLocation(),
                 categoriasAsStrings,
+                event.isOfficial(),
                 event.isActive(),
                 event.getMaxParticipants(),
                 event.getImages()
@@ -169,6 +170,7 @@ public class EventService {
                 event.getLocation(),
                 categoriasAsStrings,
                 event.isActive(),
+                event.isOfficial(),
                 event.getMaxParticipants(),
                 event.getImages()
         );
@@ -361,6 +363,7 @@ public class EventService {
                 event.getDateTime(),
                 event.getLocation(),
                 categoriasAsStrings,
+                event.isOfficial(),
                 event.isActive(),
                 event.getMaxParticipants(),
                 event.getImages()
