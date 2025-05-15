@@ -42,7 +42,7 @@ void testProcessEvents_Success() {
     event1.setDateTime(now.plusHours(12));
     event1.setLocation("Local 1");
     User user1 = new User();
-    user1.setEmail("herbertgac@gmail.com");
+    user1.setEmail("email1@example.com");
     user1.setName("User 1");
     event1.setEnrolledUserList(List.of(user1));
 
@@ -52,7 +52,7 @@ void testProcessEvents_Success() {
     event2.setDateTime(now.plusHours(20));
     event2.setLocation("Local 2");
     User user2 = new User();
-    user2.setEmail("herbertgacruz@gmail.com");
+    user2.setEmail("email2@example.com");
     user2.setName("User 2");
     event2.setEnrolledUserList(List.of(user2));
 
@@ -97,7 +97,7 @@ void testNotifyUsersForQueuedEvents_Success() {
     event.setDateTime(now.plusHours(10));
     event.setLocation("Local Teste");
     User user = new User();
-    user.setEmail("herbertgacruz@gmail.com");
+    user.setEmail("email@example.com");
     user.setName("User Teste");
     event.setEnrolledUserList(List.of(user));
 
